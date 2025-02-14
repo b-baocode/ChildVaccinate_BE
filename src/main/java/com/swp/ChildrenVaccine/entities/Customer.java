@@ -1,7 +1,5 @@
 package com.swp.ChildrenVaccine.entities;
 
-
-
 import jakarta.persistence.*;
 // import lombok.Data;
 
