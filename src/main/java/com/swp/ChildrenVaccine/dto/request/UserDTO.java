@@ -1,7 +1,7 @@
 package com.swp.ChildrenVaccine.dto.request;
 
 import com.swp.ChildrenVaccine.entities.User;
-import com.swp.ChildrenVaccine.enums.Role;
+import com.swp.ChildrenVaccine.enums.RoleEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,7 +17,7 @@ public class UserDTO {
     String password;
     String fullName;
     String phone;
-    Role role;
+    RoleEnum role;
     Boolean active;
 
     public UserDTO (User user) {
