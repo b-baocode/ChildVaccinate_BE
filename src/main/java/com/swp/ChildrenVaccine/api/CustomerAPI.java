@@ -12,7 +12,6 @@ public class CustomerAPI {
     @Autowired
     private CustomerRepository customerRepository;
 
-
     @PostMapping("/customers")
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
         Customer savedCustomer = customerRepository.save(customer);

@@ -2,6 +2,8 @@ package com.swp.ChildrenVaccine.entities;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "vaccines")
 public class Vaccine {
@@ -26,7 +28,7 @@ public class Vaccine {
     private int quantity;
 
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
-    private double price;
+    private BigDecimal price;
 
     // Getters and Setters
 
@@ -78,11 +80,11 @@ public class Vaccine {
         this.quantity = quantity;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 }

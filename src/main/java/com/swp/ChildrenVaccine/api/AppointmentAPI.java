@@ -23,6 +23,7 @@ public class AppointmentAPI {
     @Autowired
     private AppointmentService appointmentService;
 
+
     @PostMapping("/register-vaccination")
     public ResponseEntity<String> createAppointment(@RequestBody AppointmentRegisterRequest request) {
         try {

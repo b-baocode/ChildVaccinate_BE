@@ -15,6 +15,14 @@ public class AppointmentService {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
+    //Get customer information using session after login
+
+    //Get all child list of the customer
+
+    //Get all vaccine list
+
+    //Get all package list
+
     public void createAppointment(String customerId, String childId, String vaccineId, String packageId, LocalDate appointmentDate, LocalTime appointmentTime) throws Exception {
 
         // Validate that either a vaccine or a package is selected, but not both
