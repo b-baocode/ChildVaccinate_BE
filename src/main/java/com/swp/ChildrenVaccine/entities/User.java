@@ -1,7 +1,7 @@
 package com.swp.ChildrenVaccine.entities;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.swp.ChildrenVaccine.enums.Role;
+import com.swp.ChildrenVaccine.enums.RoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -41,7 +41,7 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.ORDINAL)
     @NotNull
-    private Role role;
+    private RoleEnum role;
 
     @Column(name = "active")
     @NotNull
