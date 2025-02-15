@@ -1,11 +1,17 @@
 package com.swp.ChildrenVaccine.api;
 
 import com.swp.ChildrenVaccine.entities.Appointment;
+import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
 import com.swp.ChildrenVaccine.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,21 +24,19 @@ public class AppointmentAPI {
     private AppointmentService appointmentService;
 
     @PostMapping("/register-vaccination")
-    public ResponseEntity<String> createAppointment(
-            Authentication authentication,
-            @RequestParam String childId,
-            @RequestParam(required = false) String vaccineId,
-            @RequestParam(required = false) String packageId,
-            @RequestParam LocalDate appointmentDate,
-            @RequestParam LocalTime appointmentTime) {
-
-        String customerId = authentication.getName(); // Assuming customer ID is stored as username
-
+    public ResponseEntity<String> createAppointment(@RequestBody AppointmentRegisterRequest request) {
         try {
-            appointmentService.createAppointment(customerId, childId, vaccineId, packageId, appointmentDate, appointmentTime);
+            appointmentService.createAppointment(
+                    request.getCustomerId(),
+                    request.getChildId(),
+                    request.getVaccineId(),
+                    request.getPackageId(),
+                    request.getAppointmentDate(),
+                    request.getAppointmentTime()
+            );
             return ResponseEntity.ok("Appointment created successfully");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }

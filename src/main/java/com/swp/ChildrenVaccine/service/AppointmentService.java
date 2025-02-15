@@ -15,12 +15,6 @@ public class AppointmentService {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    @Autowired
-    private ChildRepository childRepository;
-
-
-
-
     public void createAppointment(String customerId, String childId, String vaccineId, String packageId, LocalDate appointmentDate, LocalTime appointmentTime) throws Exception {
 
         // Validate that either a vaccine or a package is selected, but not both
