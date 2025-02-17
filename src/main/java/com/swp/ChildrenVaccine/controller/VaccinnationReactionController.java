@@ -1,4 +1,4 @@
-package com.swp.ChildrenVaccine.api;
+package com.swp.ChildrenVaccine.controller;
 
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.repository.CustomerRepository;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/vaccination-reactions")
-public class VaccinnationReactionAPI {
+public class VaccinnationReactionController {
 
     @Autowired
     private CustomerRepository customerRepository;

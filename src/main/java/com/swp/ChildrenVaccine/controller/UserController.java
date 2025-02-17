@@ -1,4 +1,4 @@
-package com.swp.ChildrenVaccine.api;
+package com.swp.ChildrenVaccine.controller;
 
 import com.swp.ChildrenVaccine.dto.request.user.UserCreateRequest;
 import com.swp.ChildrenVaccine.dto.request.user.UserLoginRequest;
@@ -9,13 +9,12 @@ import com.swp.ChildrenVaccine.exception.AppException;
 import com.swp.ChildrenVaccine.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-public class UserAPI {
+public class UserController {
     private final UserService userService;
 
     @PostMapping("/login")

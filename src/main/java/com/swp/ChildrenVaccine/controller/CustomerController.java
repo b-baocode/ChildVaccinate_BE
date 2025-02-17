@@ -1,4 +1,4 @@
-package com.swp.ChildrenVaccine.api;
+package com.swp.ChildrenVaccine.controller;
 
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.repository.CustomerRepository;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping
-public class CustomerAPI {
+public class CustomerController {
     @Autowired
     private CustomerRepository customerRepository;
 

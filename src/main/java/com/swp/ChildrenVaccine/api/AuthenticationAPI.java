@@ -1,4 +1,4 @@
-package com.swp.ChildrenVaccine.controller;
+package com.swp.ChildrenVaccine.api;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
