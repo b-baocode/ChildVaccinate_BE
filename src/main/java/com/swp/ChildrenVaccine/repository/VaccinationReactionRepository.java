@@ -1,4 +1,7 @@
 package com.swp.ChildrenVaccine.repository;
 
-public interface VaccinationReactionRepository {
+import com.swp.ChildrenVaccine.entities.VaccinationReaction;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface VaccinationReactionRepository extends JpaRepository<VaccinationReaction, Long> {
 }

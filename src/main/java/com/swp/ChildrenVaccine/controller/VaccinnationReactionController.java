@@ -1,7 +1,10 @@
 package com.swp.ChildrenVaccine.controller;
 
+import com.swp.ChildrenVaccine.dto.request.VaccinationReactionRequest;
 import com.swp.ChildrenVaccine.entities.Customer;
+import com.swp.ChildrenVaccine.entities.VaccinationReaction;
 import com.swp.ChildrenVaccine.repository.CustomerRepository;
+import com.swp.ChildrenVaccine.repository.VaccinationReactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,31 +18,20 @@ import java.util.Optional;
 public class VaccinnationReactionController {
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private VaccinationReactionRepository vaccinationReactionRepository;
 
-    @GetMapping
-    public List<Customer> getAllReactions() {
-        return customerRepository.findAll();
-    }
+
 
     @PostMapping
-    public Customer createReaction(@RequestBody Customer customer) {
-        return customerRepository.save(customer);
+    public ResponseEntity<VaccinationReaction> createReaction(@RequestBody VaccinationReactionRequest request) {
+        VaccinationReaction reaction = new VaccinationReaction();
+        reaction.setReactionDate(request.getReactionDate());
+        reaction.setSymptoms(request.getSymptoms());
+        reaction.setSeverity(request.getSeverity());
+        reaction.setNotes(request.getNotes());
+        VaccinationReaction savedReaction = vaccinationReactionRepository.save(reaction);
+        return ResponseEntity.ok(savedReaction);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Customer> updateReaction(@PathVariable Long id, @RequestBody Customer customerDetails) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-        if (optionalCustomer.isPresent()) {
-            Customer customer = optionalCustomer.get();
-            customer.setEmail(customerDetails.getEmail());
-            customer.setFullName(customerDetails.getFullName());
-            customer.setPhone(customerDetails.getPhone());
-            customer.setAddress(customerDetails.getAddress());
-            final Customer updatedCustomer = customerRepository.save(customer);
-            return ResponseEntity.ok(updatedCustomer);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+
 }
