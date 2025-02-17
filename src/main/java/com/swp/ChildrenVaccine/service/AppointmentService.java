@@ -1,45 +1,57 @@
 package com.swp.ChildrenVaccine.service;
 
+import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
 import com.swp.ChildrenVaccine.entities.Appointment;
+import com.swp.ChildrenVaccine.enums.AppStatus;
+import com.swp.ChildrenVaccine.enums.PaymentStatus;
+import com.swp.ChildrenVaccine.mapper.AppointmentMapper;
 import com.swp.ChildrenVaccine.repository.AppointmentRepository;
 import com.swp.ChildrenVaccine.repository.ChildRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class AppointmentService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
+
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    //Get customer information using session after login
+    public List<Appointment> getAllAppointments() {
+        List<Appointment> appointments = appointmentRepository.findAll();
+        logger.info("Fetched {} appointments from database", appointments.size());
 
-    //Get all child list of the customer
-
-    //Get all vaccine list
-
-    //Get all package list
-
-    public void createAppointment(String customerId, String childId, String vaccineId, String packageId, LocalDate appointmentDate, LocalTime appointmentTime) throws Exception {
-
-        // Validate that either a vaccine or a package is selected, but not both
-        if ((vaccineId == null && packageId == null) || (vaccineId != null && packageId != null)) {
-            throw new Exception("Either vaccine or package must be selected, but not both");
+        for (Appointment appointment : appointments) {
+            logger.info("Appointment: {}", appointment);
         }
 
-        // Create and save the appointment
-        Appointment appointment = new Appointment();
-        appointment.setCustomerId(customerId);
-        appointment.setChildId(childId);
-        appointment.setVaccineId(vaccineId);
-        appointment.setPackageId(packageId);
-        appointment.setAppointmentDate(appointmentDate);
-        appointment.setAppointmentTime(appointmentTime);
-        appointment.setStatus(Appointment.Status.CONFIRMED);
+        return appointments;
+    }
 
-        appointmentRepository.save(appointment);
+    public String generateNewAppId() {
+        String lastId = appointmentRepository.findMaxAppId();
+        int newId = (lastId != null) ? Integer.parseInt(lastId.substring(1)) + 1 : 1;
+        return String.format("A%03d", newId);
+    }
+
+    public Appointment createAppointment(AppointmentRegisterRequest request) {
+        Appointment appointment = AppointmentMapper.INSTANCE.toEntity(request);
+
+        // Tạo appId mới
+        String lastId = appointmentRepository.findMaxAppId();
+        int newId = (lastId != null) ? Integer.parseInt(lastId.substring(1)) + 1 : 1;
+        appointment.setAppId(String.format("A%03d", newId));
+
+        appointment.setStatus(AppStatus.COMFIRMED);
+        appointment.setPaymentStatus(PaymentStatus.PENDING);
+
+        return appointmentRepository.save(appointment);
     }
 }

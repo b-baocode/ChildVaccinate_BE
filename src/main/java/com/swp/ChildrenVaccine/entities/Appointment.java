@@ -1,6 +1,11 @@
 package com.swp.ChildrenVaccine.entities;
 
+import com.swp.ChildrenVaccine.enums.AppStatus;
+import com.swp.ChildrenVaccine.enums.PaymentStatus;
+import com.swp.ChildrenVaccine.repository.AppointmentRepository;
 import jakarta.persistence.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -26,17 +31,30 @@ public class Appointment {
 
     @Column(name = "status", length = 15, nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private AppStatus status;
 
     @Column(name = "payment_status", length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus;
+    private PaymentStatus  paymentStatus;
 
     @Column(name = "vaccine_id", length = 50)
     private String vaccineId;
 
     @Column(name = "package_id", length = 50)
     private String packageId;
+
+    @Transient
+    private AppointmentRepository appointmentRepository;
+
+    // Tự động tạo appId theo dạng A001, A002...
+    @PrePersist
+    private void generateAppId() {
+        if (this.appId == null || this.appId.isEmpty()) {
+            String lastId = appointmentRepository.findMaxAppId();
+            int newId = (lastId != null) ? Integer.parseInt(lastId.substring(1)) + 1 : 1;
+            this.appId = String.format("A%03d", newId);
+        }
+    }
 
     // Getters and Setters
 
@@ -80,11 +98,11 @@ public class Appointment {
         this.appointmentTime = appointmentTime;
     }
 
-    public Status getStatus() {
+    public AppStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(AppStatus status) {
         this.status = status;
     }
 
@@ -110,14 +128,5 @@ public class Appointment {
 
     public void setPackageId(String packageId) {
         this.packageId = packageId;
-    }
-
-    // Enums for status and payment status
-    public enum Status {
-        CONFIRMED, COMPLETED, CANCELLED
-    }
-
-    public enum PaymentStatus {
-        PENDING, PAID
     }
 }
