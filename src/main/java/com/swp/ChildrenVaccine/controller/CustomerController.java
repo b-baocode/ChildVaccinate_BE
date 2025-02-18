@@ -1,4 +1,4 @@
-package com.swp.ChildrenVaccine.api;
+package com.swp.ChildrenVaccine.controller;
 
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.repository.CustomerRepository;
@@ -6,19 +6,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping
-public class CustomerAPI {
+@RequestMapping("/customers")
+public class CustomerController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    @PostMapping("/customers")
+    @GetMapping("/first")
+    public ResponseEntity<Customer> getFirstCustomer() {
+        List<Customer> customers = customerRepository.findAll();
+        if (customers.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Customer firstCustomer = customers.get(0);
+        return ResponseEntity.ok(firstCustomer);
+    }
+
+    @PostMapping("/create")
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
         Customer savedCustomer = customerRepository.save(customer);
         return ResponseEntity.ok(savedCustomer);
     }
 
-    @GetMapping("/customers/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomer(@PathVariable Long id) {
         Customer customer = customerRepository.findById(id).orElse(null);
         if (customer == null) {
@@ -27,7 +39,7 @@ public class CustomerAPI {
         return ResponseEntity.ok(customer);
     }
 
-    @PutMapping("/customers/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customerDetails) {
         Customer customer = customerRepository.findById(id).orElse(null);
         if (customer == null) {
@@ -41,7 +53,7 @@ public class CustomerAPI {
         Customer updatedCustomer = customerRepository.save(customer);
         return ResponseEntity.ok(updatedCustomer);
     }
-    @DeleteMapping("/customers/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         Customer customer = customerRepository.findById(id).orElse(null);
         if (customer == null) {

@@ -30,4 +30,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     //luư lịch hẹn
     Appointment save(Appointment appointment);
+
 }

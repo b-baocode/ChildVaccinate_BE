@@ -2,6 +2,7 @@ package com.swp.ChildrenVaccine.controller;
 
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
+import com.swp.ChildrenVaccine.enums.AppStatus;
 import com.swp.ChildrenVaccine.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/appointments")
+@RequestMapping("/appointment")
+@CrossOrigin(origins = "http://localhost:3000") // Port của React
 public class AppointmentController {
 
     private static final Logger logger = LoggerFactory.getLogger(AppointmentController.class);
@@ -45,6 +47,17 @@ public class AppointmentController {
             return ResponseEntity.ok("Appointment created successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{appointmentId}/status")
+    public ResponseEntity<Appointment> updateAppointmentStatus(@PathVariable Long appointmentId, @RequestParam AppStatus newStatus) {
+        logger.info("PUT /appointments/{}/status called with status: {}", appointmentId, newStatus);
+        try {
+            Appointment updatedAppointment = appointmentService.updateAppointmentStatus(appointmentId, newStatus);
+            return ResponseEntity.ok(updatedAppointment);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 }

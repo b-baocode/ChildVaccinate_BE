@@ -6,14 +6,10 @@ import com.swp.ChildrenVaccine.enums.AppStatus;
 import com.swp.ChildrenVaccine.enums.PaymentStatus;
 import com.swp.ChildrenVaccine.mapper.AppointmentMapper;
 import com.swp.ChildrenVaccine.repository.AppointmentRepository;
-import com.swp.ChildrenVaccine.repository.ChildRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -35,12 +31,6 @@ public class AppointmentService {
         return appointments;
     }
 
-    public String generateNewAppId() {
-        String lastId = appointmentRepository.findMaxAppId();
-        int newId = (lastId != null) ? Integer.parseInt(lastId.substring(1)) + 1 : 1;
-        return String.format("A%03d", newId);
-    }
-
     public Appointment createAppointment(AppointmentRegisterRequest request) {
         Appointment appointment = AppointmentMapper.INSTANCE.toEntity(request);
 
@@ -49,9 +39,17 @@ public class AppointmentService {
         int newId = (lastId != null) ? Integer.parseInt(lastId.substring(1)) + 1 : 1;
         appointment.setAppId(String.format("A%03d", newId));
 
-        appointment.setStatus(AppStatus.COMFIRMED);
+        appointment.setStatus(AppStatus.CONFIRMED);
         appointment.setPaymentStatus(PaymentStatus.PENDING);
 
+        return appointmentRepository.save(appointment);
+    }
+
+    public Appointment updateAppointmentStatus(Long appointmentId, AppStatus newStatus) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+
+        appointment.setStatus(newStatus);
         return appointmentRepository.save(appointment);
     }
 }
