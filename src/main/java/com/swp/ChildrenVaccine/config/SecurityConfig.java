@@ -2,8 +2,11 @@ package com.swp.ChildrenVaccine.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,17 +18,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .anyRequest().permitAll() // Cho phép tất cả request (có thể cần chỉnh lại nếu có auth)
-                )
-                .csrf(csrf -> csrf.disable()); // Tắt CSRF nếu không cần thiết
+                .csrf(csrf -> csrf.disable()) // Tắt CSRF (chỉ nên tắt nếu dùng JWT)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)) // Đặt chế độ Stateless
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/vaccinatecenter/api/auth/login").permitAll() // Cho phép login không cần auth
+                        .anyRequest().permitAll() // Các API khác yêu cầu xác thực
+                );
+
         return http.build();
     }
 
-    // ✅ Thêm PasswordEncoder để tránh lỗi bean không được tìm thấy
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
+        return configuration.getAuthenticationManager();
+    }
+
+
 }
+

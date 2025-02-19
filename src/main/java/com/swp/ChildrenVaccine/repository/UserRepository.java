@@ -4,13 +4,11 @@ import com.swp.ChildrenVaccine.entities.User;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-
-public interface UserRepository extends JpaRepository<User, Integer> {
+@Repository
+public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
-    Optional<User> findById(Long id);
-    boolean existsByEmail(String email);
-
-    String email(@Size(max = 100) @NotNull String email);
+    Optional<User> findTopByOrderByIdDesc();
 }
