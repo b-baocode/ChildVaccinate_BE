@@ -24,4 +24,9 @@ public class CustomerService {
         return "CUS001"; // ID đầu tiên
     }
 
+    public Customer findByEmail(String email) {
+        Optional<Customer> customer = customerRepository.findByUser_Email(email);
+        return customer.orElse(null);
+    }
+
 }

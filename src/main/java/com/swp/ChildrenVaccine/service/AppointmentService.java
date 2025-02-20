@@ -1,6 +1,7 @@
 package com.swp.ChildrenVaccine.service;
 
 import com.swp.ChildrenVaccine.entities.Appointment;
+import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.repository.AppointmentRepository;
 import com.swp.ChildrenVaccine.repository.ChildRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class AppointmentService {
 
         // Create and save the appointment
         Appointment appointment = new Appointment();
-        appointment.setCustomerId(customerId);
+        appointment.getCustomerId();
         appointment.setChildId(childId);
         appointment.setVaccineId(vaccineId);
         appointment.setPackageId(packageId);

@@ -1,26 +1,30 @@
 package com.swp.ChildrenVaccine.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "RatingFeedback")
 public class RatingFeedback {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
+    @Column(name = "Feedback_id")
+    private String id;
 
-    @Column(name = "appointment_id", length = 50, nullable = false)
-    private String appointmentId;
+    @ManyToOne
+    @JoinColumn(name = "appointment_id", nullable = false)
+    private Appointment appointment;
 
-    @Column(name = "customer_id", length = 50, nullable = false)
-    private String customerId;
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
 
     @Column(name = "rating", nullable = false)
-    private Integer rating;
+    private int rating;
 
-    @Column(name = "feedback", columnDefinition = "TEXT")
+    @Column(name = "feedback")
     private String feedback;
 
     // Getters and Setters
