@@ -41,6 +41,7 @@ public class AuthenticationAPI {
         // Extract email from request and store it in session
         session.setAttribute("userEmail", request.getEmail());
 
+
         return ResponseEntity.ok(response);
     }
 
