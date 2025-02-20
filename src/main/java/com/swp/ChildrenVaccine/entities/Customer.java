@@ -21,7 +21,7 @@ public class Customer {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    private User user; // Use object reference instead of storing just userId
 
     @Column(name = "address", length = 255)
     private String address;

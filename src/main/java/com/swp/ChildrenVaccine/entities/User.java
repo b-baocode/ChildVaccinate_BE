@@ -16,22 +16,21 @@ import org.hibernate.annotations.Nationalized;
 public class User {
     @Id
     @Column(name = "user_id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    @Size(max = 100)
+    @Size(max = 255)
     @NotNull
-    @Column(name = "email", length = 100)
+    @Column(name = "email", length = 255)
     private String email;
 
-    @Size(max = 100)
-    @Column(name = "password", length = 100)
+    @Size(max = 255)
+    @Column(name = "password", length = 255)
     @NotNull
     private String password;
 
-    @Size(max = 250)
+    @Size(max = 255)
     @Nationalized
-    @Column(name = "full_name", length = 250)
+    @Column(name = "full_name", length = 255)
     private String fullName;
 
     @Size(max = 20)
@@ -39,7 +38,7 @@ public class User {
     private String phone;
 
     @Column(name = "role")
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @NotNull
     private RoleEnum role;
 
