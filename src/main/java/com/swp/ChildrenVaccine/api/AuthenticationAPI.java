@@ -9,6 +9,7 @@ import com.swp.ChildrenVaccine.repository.UserRepository;
 import com.swp.ChildrenVaccine.service.AuthenticationService;
 import com.swp.ChildrenVaccine.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,8 +34,14 @@ public class AuthenticationAPI {
     private TokenService tokenService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseEntity<?>> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpSession session) {
+        // Call authService to authenticate user
+        ResponseEntity<?> response = authService.login(request);
+
+        // Extract email from request and store it in session
+        session.setAttribute("userEmail", request.getEmail());
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
@@ -56,5 +63,14 @@ public class AuthenticationAPI {
             revokedTokenRepository.save(revokedToken);
         }
         return ResponseEntity.ok("Đăng xuất thành công!");
+    }
+
+    @GetMapping("/session-info")
+    public ResponseEntity<?> getSessionInfo(HttpSession session) {
+        String email = (String) session.getAttribute("userEmail");
+        if (email == null) {
+            return ResponseEntity.status(401).body("Chưa đăng nhập!");
+        }
+        return ResponseEntity.ok("User: " + email);
     }
 }
