@@ -21,14 +21,7 @@ public class AppointmentService {
     private AppointmentRepository appointmentRepository;
 
     public List<Appointment> getAllAppointments() {
-        List<Appointment> appointments = appointmentRepository.findAll();
-        logger.info("Fetched {} appointments from database", appointments.size());
-
-        for (Appointment appointment : appointments) {
-            logger.info("Appointment: {}", appointment);
-        }
-
-        return appointments;
+        return appointmentRepository.findAll();
     }
 
     public Appointment createAppointment(AppointmentRegisterRequest request) {
@@ -36,7 +29,7 @@ public class AppointmentService {
 
         // Tạo appId mới
         String lastId = appointmentRepository.findMaxAppId();
-        int newId = (lastId != null) ? Integer.parseInt(lastId.substring(1)) + 1 : 1;
+        int newId = (lastId != null) ? Integer.parseInt(lastId.replaceAll("[^0-9]", "")) + 1 : 1;
         appointment.setAppId(String.format("A%03d", newId));
 
         appointment.setStatus(AppStatus.CONFIRMED);

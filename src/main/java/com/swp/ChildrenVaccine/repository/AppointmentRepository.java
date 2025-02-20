@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
@@ -31,4 +32,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     //luư lịch hẹn
     Appointment save(Appointment appointment);
 
+    Optional<Appointment> findByAppId(String appId);
 }

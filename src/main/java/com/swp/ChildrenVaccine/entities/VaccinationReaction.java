@@ -14,17 +14,17 @@ import java.util.List;
 public class VaccinationReaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private LocalDateTime reactionDate; // Ngày và giờ xảy ra phản ứng
-    private List<String> symptoms; // Các triệu chứng phản ứng
+    private String symptoms; // Các triệu chứng phản ứng
     private Severity severity; // Mức độ phản ứng (nhẹ, nặng, khẩn cấp)
     private String notes;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -36,11 +36,11 @@ public class VaccinationReaction {
         this.reactionDate = reactionDate;
     }
 
-    public List<String> getSymptoms() {
+    public String getSymptoms() {
         return symptoms;
     }
 
-    public void setSymptoms(List<String> symptoms) {
+    public void setSymptoms(String symptoms) {
         this.symptoms = symptoms;
     }
 

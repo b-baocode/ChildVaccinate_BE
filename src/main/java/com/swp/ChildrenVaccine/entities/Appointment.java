@@ -26,7 +26,6 @@ public class Appointment {
     @Column(name = "child_id", length = 50, nullable = false)
     private String childId;
 
-
     @Column(name = "appointment_date", nullable = false)
     private LocalDate appointmentDate;
 

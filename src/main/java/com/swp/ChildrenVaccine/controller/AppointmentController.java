@@ -9,8 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import jakarta.annotation.PostConstruct;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/appointment")
@@ -28,9 +33,14 @@ public class AppointmentController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Iterable<Appointment>> getAllAppointments() {
-        logger.info("GET /appointments/all called");
-        return ResponseEntity.ok(appointmentService.getAllAppointments());
+    public ResponseEntity<List<Appointment>> getAllAppointments() {
+        try {
+            List<Appointment> appointments = appointmentService.getAllAppointments();
+            return ResponseEntity.ok(appointments);
+        } catch (Exception e) {
+            logger.error("Error retrieving appointments", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @PostMapping("/register-vaccination")

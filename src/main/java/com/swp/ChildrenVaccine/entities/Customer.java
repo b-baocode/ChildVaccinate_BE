@@ -1,85 +1,35 @@
 package com.swp.ChildrenVaccine.entities;
 
+import com.swp.ChildrenVaccine.enums.Gender;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 // import lombok.Data;
 
-@Entity
+import java.time.LocalDate;
+import java.util.Date;
 
+@Entity
+@Getter
+@Setter
 @Table(name = "customers")
 public class Customer {
-    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(unique = true)
-    private String email;
-    private String password;
+    @Column(name = "cus_id", length = 50, nullable = false)
+    private String cusId;
 
-    public String getPassword() {
-        return password;
-    }
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
-    public Customer(Long id, String email, String password, String fullName, String phone, String address) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.fullName = fullName;
-        this.phone = phone;
-        this.address = address;
-    }
-
-    public Customer() {
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    private String fullName;
-    
-    private String phone;
-    
+    @Column(name = "address", length = 255)
     private String address;
 
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth; // No need for @Temporal
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", length = 10)
+    private Gender gender;
 }

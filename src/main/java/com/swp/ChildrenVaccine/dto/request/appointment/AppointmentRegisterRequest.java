@@ -3,6 +3,7 @@ package com.swp.ChildrenVaccine.dto.request.appointment;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.AssertTrue;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,9 +28,11 @@ public class AppointmentRegisterRequest {
         private String packageId;
 
         @NotNull
+        @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDate appointmentDate;
 
         @NotNull
+        @JsonFormat(pattern = "HH:mm:ss")
         private LocalTime appointmentTime;
 
         // Đảm bảo chỉ có 1 trong 2 giá trị được điền
