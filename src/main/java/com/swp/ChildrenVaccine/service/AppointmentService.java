@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class AppointmentService {
@@ -43,4 +44,15 @@ public class AppointmentService {
 
         appointmentRepository.save(appointment);
     }
+
+    public List<Appointment> findAllAppointments() {
+        return appointmentRepository.findAll();
+    }
+
+    public Appointment findByAppId(String appId) {
+        return appointmentRepository.findByAppId(appId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy cuộc hẹn với ID: " + appId));
+    }
+
+
 }

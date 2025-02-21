@@ -19,7 +19,7 @@ public class Appointment {
 
     @OneToOne
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customerId; // Sửa tên thành 'customer'
+    private Customer customerId;
 
     @Column(name = "child_id", length = 50, nullable = false)
     private String childId;

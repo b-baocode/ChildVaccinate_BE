@@ -1,8 +1,13 @@
 package com.swp.ChildrenVaccine.entities;
 
+import com.swp.ChildrenVaccine.enums.GenderEnum;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDate;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "children")
 public class Child {
@@ -11,8 +16,9 @@ public class Child {
     @Column(name = "child_id", length = 50)
     private String childId;
 
-    @Column(name = "cus_id", length = 50, nullable = false)
-    private String cusId;
+    @ManyToOne
+    @JoinColumn(name = "cus_id", nullable = false)
+    private Customer customer;
 
     @Column(name = "full_name", length = 255, nullable = false)
     private String fullName;
@@ -20,9 +26,9 @@ public class Child {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
-    @Column(name = "gender", length = 10)
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    @Column(name = "gender", length = 10)
+    private GenderEnum gender;
 
     @Column(name = "height")
     private Float height;
@@ -39,90 +45,4 @@ public class Child {
     @Column(name = "health_note", columnDefinition = "TEXT")
     private String healthNote;
 
-    // Getters and Setters
-
-    public String getChildId() {
-        return childId;
-    }
-
-    public void setChildId(String childId) {
-        this.childId = childId;
-    }
-
-    public String getCusId() {
-        return cusId;
-    }
-
-    public void setCusId(String cusId) {
-        this.cusId = cusId;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public Float getHeight() {
-        return height;
-    }
-
-    public void setHeight(Float height) {
-        this.height = height;
-    }
-
-    public Float getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Float weight) {
-        this.weight = weight;
-    }
-
-    public String getBloodType() {
-        return bloodType;
-    }
-
-    public void setBloodType(String bloodType) {
-        this.bloodType = bloodType;
-    }
-
-    public String getAllergies() {
-        return allergies;
-    }
-
-    public void setAllergies(String allergies) {
-        this.allergies = allergies;
-    }
-
-    public String getHealthNote() {
-        return healthNote;
-    }
-
-    public void setHealthNote(String healthNote) {
-        this.healthNote = healthNote;
-    }
-
-    // Enum for gender
-    public enum Gender {
-        MALE, FEMALE, OTHER
-    }
 }

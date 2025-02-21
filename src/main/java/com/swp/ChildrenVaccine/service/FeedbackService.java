@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.sql.Time;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,14 +50,14 @@ public class FeedbackService {
         feedback.setRating(request.getRating());
         feedback.setFeedback(request.getFeedback());
 
-        System.out.println("Saving feedback: " + feedback);
-        System.out.println("Feedback ID: " + feedback.getId());
-        System.out.println("Appointment: " + feedback.getAppointment());
-        System.out.println("Customer: " + feedback.getCustomer());
-        System.out.println("Rating: " + feedback.getRating());
-        System.out.println("Feedback: " + feedback.getFeedback());
-        feedbackRepository.saveAndFlush(feedback);  // 🚀 Gọi saveAndFlush thay vì save()
-        System.out.println("Feedback saved successfully!");
+//        System.out.println("Saving feedback: " + feedback);
+//        System.out.println("Feedback ID: " + feedback.getId());
+//        System.out.println("Appointment: " + feedback.getAppointment());
+//        System.out.println("Customer: " + feedback.getCustomer());
+//        System.out.println("Rating: " + feedback.getRating());
+//        System.out.println("Feedback: " + feedback.getFeedback());
+        feedbackRepository.saveAndFlush(feedback);  // Gọi saveAndFlush thay vì save()
+        //System.out.println("Feedback saved successfully!");
     }
 
     public String generateFeedbackId() {
@@ -68,5 +69,9 @@ public class FeedbackService {
             return String.format("FB%03d", number);
         }
         return "FB001"; // ID đầu tiên nếu chưa có feedback nào
+    }
+
+    public List<RatingFeedback> getAllFeedback() {
+        return feedbackRepository.findAll();
     }
 }

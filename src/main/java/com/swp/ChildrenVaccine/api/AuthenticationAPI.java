@@ -4,11 +4,13 @@ import com.swp.ChildrenVaccine.dto.request.LoginRequest;
 import com.swp.ChildrenVaccine.dto.request.RegisterRequest;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.entities.RevokedToken;
+import com.swp.ChildrenVaccine.entities.Staff;
 import com.swp.ChildrenVaccine.exception.EmailAlreadyExistsException;
 import com.swp.ChildrenVaccine.repository.RevokedTokenRepository;
 import com.swp.ChildrenVaccine.repository.UserRepository;
 import com.swp.ChildrenVaccine.service.AuthenticationService;
 import com.swp.ChildrenVaccine.service.CustomerService;
+import com.swp.ChildrenVaccine.service.StaffService;
 import com.swp.ChildrenVaccine.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -38,6 +40,10 @@ public class AuthenticationAPI {
     @Autowired
     private final CustomerService customerService;
 
+    @Autowired
+    private final StaffService staffService;
+
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpSession session) {
         // Call authService to authenticate user
@@ -50,7 +56,10 @@ public class AuthenticationAPI {
             session.setAttribute("loggedInCustomer", customer);
         }
 
-
+        Staff staff = staffService.findByEmail(request.getEmail());
+        if (staff != null) {
+            session.setAttribute("loggedInStaff", staff);
+        }
         return ResponseEntity.ok(response);
     }
 
@@ -76,7 +85,7 @@ public class AuthenticationAPI {
         return ResponseEntity.ok("Đăng xuất thành công!");
     }
 
-    @GetMapping("/session-info")
+    @GetMapping("/customer/session-info")
     public ResponseEntity<?> getSessionInfo(HttpSession session) {
         Customer customer = (Customer) session.getAttribute("loggedInCustomer");
 
@@ -86,4 +95,16 @@ public class AuthenticationAPI {
 
         return ResponseEntity.ok(customer);
     }
+
+    @GetMapping("/staff/session-info")
+    public ResponseEntity<?> getStaffSessionInfo(HttpSession session) {
+        Staff staff = (Staff) session.getAttribute("loggedInStaff");
+
+        if (staff == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy thông tin staff trong session.");
+        }
+
+        return ResponseEntity.ok(staff);
+    }
+
 }
