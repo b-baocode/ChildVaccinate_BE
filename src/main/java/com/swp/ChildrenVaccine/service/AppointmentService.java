@@ -30,7 +30,7 @@ public class AppointmentService {
         // Tạo appId mới
         String lastId = appointmentRepository.findMaxAppId();
         int newId = (lastId != null) ? Integer.parseInt(lastId.replaceAll("[^0-9]", "")) + 1 : 1;
-        appointment.setAppId(String.format("A%03d", newId));
+        appointment.setAppId(String.format("APP%03d", newId));
 
         appointment.setStatus(AppStatus.CONFIRMED);
         appointment.setPaymentStatus(PaymentStatus.PENDING);

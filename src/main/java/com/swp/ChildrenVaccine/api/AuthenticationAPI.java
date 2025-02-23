@@ -38,6 +38,9 @@ public class AuthenticationAPI {
     @Autowired
     private final CustomerService customerService;
 
+//    @Autowired
+//    private final StaffService staffService;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpSession session) {
         // Call authService to authenticate user

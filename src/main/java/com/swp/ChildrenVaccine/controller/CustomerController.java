@@ -1,5 +1,6 @@
 package com.swp.ChildrenVaccine.controller;
 
+import com.swp.ChildrenVaccine.dto.request.CustomerUserDTO;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.repository.CustomerRepository;
 import com.swp.ChildrenVaccine.repository.CustomerUserProjection;
@@ -14,6 +15,15 @@ import java.util.List;
 public class CustomerController {
     @Autowired
     private CustomerRepository customerRepository;
+
+    @GetMapping("/{userId}/profile")
+    public ResponseEntity<CustomerUserProjection> getCustomerProfile(@PathVariable String userId) {
+        CustomerUserProjection customerUserDTO = customerRepository.findCustomerProfile(userId);
+        if (customerUserDTO == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(customerUserDTO);
+    }
 
     @GetMapping("/first")
     public ResponseEntity<CustomerUserProjection> getFirstCustomer() {

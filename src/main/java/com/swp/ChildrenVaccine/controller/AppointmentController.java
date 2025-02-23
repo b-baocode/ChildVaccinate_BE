@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/appointment")
@@ -44,19 +46,26 @@ public class AppointmentController {
     }
 
     @PostMapping("/register-vaccination")
-    public ResponseEntity<String> createAppointment(@RequestBody AppointmentRegisterRequest request) {
+    public ResponseEntity<Map<String, Object>> createAppointment(@RequestBody AppointmentRegisterRequest request) {
         System.out.println("Received request: " + request);
 
         if ((request.getVaccineId() != null && request.getPackageId() != null) ||
                 (request.getVaccineId() == null && request.getPackageId() == null)) {
-            return ResponseEntity.badRequest().body("Chỉ được chọn một trong vaccineId hoặc packageId");
+            Map<String, Object> errorResponse = new HashMap<>(); // Use Object here too for consistency
+            errorResponse.put("error", "Chỉ được chọn một trong vaccineId hoặc packageId");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
 
         try {
-            appointmentService.createAppointment(request);
-            return ResponseEntity.ok("Appointment created successfully");
+            Appointment createdAppointment = appointmentService.createAppointment(request);
+            Map<String, Object> successResponse = new HashMap<>();
+            successResponse.put("message", "Appointment created successfully");
+            successResponse.put("appointment", createdAppointment);
+            return ResponseEntity.ok(successResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
