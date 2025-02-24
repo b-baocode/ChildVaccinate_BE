@@ -21,10 +21,10 @@ public class ChildrenController {
         return ResponseEntity.ok(childRepository.findAll());
     }
 
-    @PostMapping("/add")
-    ResponseEntity<?> addChild(@RequestBody Child child) {
+    @PostMapping("/{cusId}/add")
+    ResponseEntity<?> addChild(@PathVariable String cusId ,@RequestBody Child child) {
         try{
-            childService.addChild(child);
+            childService.addChild(cusId ,child);
             return ResponseEntity.ok("Thêm trẻ thành công");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Thêm trẻ thất bại");

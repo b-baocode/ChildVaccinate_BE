@@ -23,10 +23,10 @@ public class ChildService {
         return null;
     }
 
-    public void addChild(@RequestBody Child child) {
+    public void addChild(String cusId , @RequestBody Child child) {
         Child newChild = new Child();
         newChild.setChildId(generateChildId());
-        newChild.setCusId(child.getCusId());
+        newChild.setCusId(cusId);
         newChild.setFullName(child.getFullName());
         newChild.setGender(child.getGender());
         newChild.setDateOfBirth(child.getDateOfBirth());
@@ -53,11 +53,9 @@ public class ChildService {
             return;
         }
         childToUpdate.setFullName(child.getFullName());
-        childToUpdate.setGender(child.getGender());
-        childToUpdate.setDateOfBirth(child.getDateOfBirth());
         childToUpdate.setWeight(child.getWeight());
         childToUpdate.setHeight(child.getHeight());
-        childToUpdate.setBloodType(child.getBloodType());
+        childToUpdate.setHealthNote(child.getHealthNote());
         childRepository.save(childToUpdate);
     }
 }
