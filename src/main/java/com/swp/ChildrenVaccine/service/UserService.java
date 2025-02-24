@@ -21,4 +21,8 @@ public class UserService {
         }
         return "U001"; // ID đầu tiên
     }
+
+    public void saveNewUserPassword(User user) {
+        userRepository.save(user);
+    }
 }
