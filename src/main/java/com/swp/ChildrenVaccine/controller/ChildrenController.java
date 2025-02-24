@@ -36,6 +36,11 @@ public class ChildrenController {
         return ResponseEntity.ok(childRepository.findById(id));
     }
 
+    @GetMapping("/{cusId}/all")
+    ResponseEntity<?> getChildrenByCusId(@PathVariable String cusId) {
+        return ResponseEntity.ok(childRepository.getChildrenByCusId(cusId));
+    }
+
     @PutMapping("/update/{id}")
     ResponseEntity<?> updateChild(@PathVariable String id, @RequestBody Child child) {
         Child childToUpdate = childRepository.findById(id).orElse(null);
