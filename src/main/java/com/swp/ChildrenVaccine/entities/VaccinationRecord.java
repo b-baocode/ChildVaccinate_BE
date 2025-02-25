@@ -1,21 +1,25 @@
 package com.swp.ChildrenVaccine.entities;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import lombok.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "vaccination_records")
 public class VaccinationRecord {
 
     @Id
     @Column(name = "vaccination_records_id", length = 50)
-    private String vaccinationRecordsId;
+    private String id;
 
-    @Column(name = "appointment_id", length = 50, nullable = false)
-    private String appointmentId;
+    @ManyToOne
+    @JoinColumn(name = "appointment_id", nullable = false)
+    private Appointment appointment;
 
-    @Column(name = "staff_id", length = 50, nullable = false)
-    private String staffId;
+    @ManyToOne
+    @JoinColumn(name = "staff_id", nullable = false)
+    private Staff staff;
 
     @Column(name = "symptoms", columnDefinition = "TEXT")
     private String symptoms;
@@ -24,7 +28,5 @@ public class VaccinationRecord {
     private String notes;
 
     @Column(name = "appointment_date", nullable = false)
-    private LocalDate appointmentDate;
-
-    // Getters and Setters
+    private java.time.LocalDate appointmentDate;
 }

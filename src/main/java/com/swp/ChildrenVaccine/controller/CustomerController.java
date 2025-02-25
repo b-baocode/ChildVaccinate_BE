@@ -34,12 +34,6 @@ public class CustomerController {
         return ResponseEntity.ok(firstCustomer);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
-        Customer savedCustomer = customerRepository.save(customer);
-        return ResponseEntity.ok(savedCustomer);
-    }
-
 //    @GetMapping("/{id}")
 //    public ResponseEntity<Customer> getCustomer(@PathVariable Long id) {
 //        Customer customer = customerRepository.findById(id).orElse(null);

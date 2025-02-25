@@ -2,7 +2,6 @@ package com.swp.ChildrenVaccine.entities;
 
 import com.swp.ChildrenVaccine.enums.AppStatus;
 import com.swp.ChildrenVaccine.enums.PaymentStatus;
-import com.swp.ChildrenVaccine.repository.AppointmentRepository;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,11 +19,13 @@ public class Appointment {
     @Column(name = "app_id", length = 50)
     private String appId;
 
-    @Column(name = "customer_id", length = 50, nullable = false)
-    private String customerId;
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customerId;
 
-    @Column(name = "child_id", length = 50, nullable = false)
-    private String childId;
+    @OneToOne
+    @JoinColumn(name = "child_id")
+    private Child childId;
 
     @Column(name = "appointment_date", nullable = false)
     private LocalDate appointmentDate;
@@ -38,32 +39,14 @@ public class Appointment {
 
     @Column(name = "payment_status", length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
-    private PaymentStatus  paymentStatus;
+    private PaymentStatus paymentStatus;
 
-    @Column(name = "vaccine_id", length = 50)
-    private String vaccineId;
+    @OneToOne
+    @JoinColumn(name = "vaccine_id")
+    private Vaccine vaccineId;
 
-    @Column(name = "package_id", length = 50)
-    private String packageId;
+    @OneToOne
+    @JoinColumn(name = "package_id")
+    private VacinePackage packageId;
 
-    @Transient
-    private AppointmentRepository appointmentRepository;
-
-    // Tự động tạo appId theo dạng A001, A002...
-    @PrePersist
-    private void generateAppId() {
-        if (this.appId == null || this.appId.isEmpty()) {
-            String lastId = appointmentRepository.findMaxAppId();
-            int newId = 1;
-            if (lastId != null && lastId.startsWith("APP")) {
-                try {
-                    newId = Integer.parseInt(lastId.substring(1)) + 1;
-                } catch (NumberFormatException e) {
-                    // Handle the case where the lastId is not in the expected format
-                    newId = 1;
-                }
-            }
-            this.appId = String.format("APP%03d", newId);
-        }
-    }
 }

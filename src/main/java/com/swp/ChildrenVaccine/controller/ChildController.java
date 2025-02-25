@@ -1,8 +1,11 @@
 package com.swp.ChildrenVaccine.controller;
 
 
+import com.swp.ChildrenVaccine.dto.response.ChildDTO;
 import com.swp.ChildrenVaccine.entities.Child;
+import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.repository.ChildRepository;
+import com.swp.ChildrenVaccine.service.ChildService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,52 +16,87 @@ import java.util.List;
 @RestController
 @RequestMapping("/childrens")
 public class ChildController {
+
+    @Autowired
+    private ChildService childService;
+
     @Autowired
     private ChildRepository childrenRepository;
 
-    @PostMapping("/register")
-    public ResponseEntity<Child> registerChild(@RequestBody Child child) {
-
-        Child savedChild = childrenRepository.save(child);
-        return ResponseEntity.status(HttpStatus.OK).body(savedChild);
+    @GetMapping("/all")
+    ResponseEntity<?> getAllChildren() {
+        return ResponseEntity.ok(childrenRepository.findAll());
     }
 
-    @GetMapping("")
-    List<Child> getListOfChildren() {
-        return childrenRepository.findAll();
+    @PostMapping("/{cusId}/add")
+    ResponseEntity<?> addChild(@PathVariable String cusId ,@RequestBody Child child) {
+        try{
+            childService.addChild(cusId ,child);
+            return ResponseEntity.ok("Thêm trẻ thành công");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Thêm trẻ thất bại");
+        }
     }
 
-    @GetMapping("/get/{id}")
+//    @GetMapping("")
+//    List<Child> getListOfChildren() {
+//        return childrenRepository.findAll();
+//    }
+
+    @GetMapping("/{id}")
     Child getChildById(@PathVariable String id) {
         return childrenRepository.findById(id).orElse(null);
     }
 
-    @GetMapping("/getByCusID/{cusID}")
-    List<Child> getChildrenByCusID(@PathVariable String cusID) {
-        return childrenRepository.getChildrenByCusId(cusID);
+//    @GetMapping("/getByCusID/{cusID}")
+//    ResponseEntity<List<Child>> getChildrenByCustomerId(@PathVariable String customerId) {
+//        List<Child> children = childService.getChildrenByCustomerId(customerId);
+//        if (children.isEmpty()) {
+//            return ResponseEntity.noContent().build();
+//        }
+//        return ResponseEntity.ok(children);
+//    }
+
+    @Autowired
+    public ChildController(ChildService childService) {
+        this.childService = childService;
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteChild(@PathVariable String id) {
-        Child child = childrenRepository.findById(id).orElse(null);
-        if (child == null) {
-            return ResponseEntity.notFound().build();
+    @GetMapping("/getByCusID/{cusID}")
+    public ResponseEntity<List<ChildDTO>> getChildrenByCustomerId(@PathVariable String cusID) {
+        List<ChildDTO> children = childService.getChildrenByCustomerId(cusID);
+        if (children.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
-        childrenRepository.delete(child);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(children);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Child> updateChild(@PathVariable String id, @RequestBody Child childDetails) {
-        Child child = childrenRepository.findById(id).orElse(null);
-        if (child == null) {
+    ResponseEntity<?> updateChild(@PathVariable String id, @RequestBody Child child) {
+        Child childToUpdate = childrenRepository.findById(id).orElse(null);
+        if (childToUpdate == null) {
             return ResponseEntity.notFound().build();
         }
-        child.setFullName(childDetails.getFullName());
-        child.setHeight(childDetails.getHeight());
-        child.setWeight(childDetails.getWeight());
-        Child updatedChild = childrenRepository.save(child);
-        return ResponseEntity.ok(updatedChild);
+        try{
+            childService.updateChild(id, child);
+            return ResponseEntity.ok("Cập nhật thông tin trẻ thành công");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Cập nhật thông tin trẻ thất bại");
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    ResponseEntity<?> deleteChild(@PathVariable String id) {
+        Child childToDelete = childrenRepository.findById(id).orElse(null);
+        if (childToDelete == null) {
+            return ResponseEntity.notFound().build();
+        }
+        try{
+            childrenRepository.delete(childToDelete);
+            return ResponseEntity.ok("Xóa trẻ thành công");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Xóa trẻ thất bại");
+        }
     }
 
 }

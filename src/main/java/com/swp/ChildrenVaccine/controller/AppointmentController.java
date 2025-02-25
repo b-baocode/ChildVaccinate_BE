@@ -1,5 +1,6 @@
 package com.swp.ChildrenVaccine.controller;
 
+import com.swp.ChildrenVaccine.dto.response.AppointmentDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
 import com.swp.ChildrenVaccine.enums.AppStatus;
@@ -51,16 +52,18 @@ public class AppointmentController {
 
         if ((request.getVaccineId() != null && request.getPackageId() != null) ||
                 (request.getVaccineId() == null && request.getPackageId() == null)) {
-            Map<String, Object> errorResponse = new HashMap<>(); // Use Object here too for consistency
+            Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Chỉ được chọn một trong vaccineId hoặc packageId");
             return ResponseEntity.badRequest().body(errorResponse);
         }
 
         try {
             Appointment createdAppointment = appointmentService.createAppointment(request);
+            AppointmentDTO responseDTO = new AppointmentDTO(createdAppointment);
+
             Map<String, Object> successResponse = new HashMap<>();
             successResponse.put("message", "Appointment created successfully");
-            successResponse.put("appointment", createdAppointment);
+            successResponse.put("appointment", responseDTO);
             return ResponseEntity.ok(successResponse);
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -69,14 +72,66 @@ public class AppointmentController {
         }
     }
 
-    @PutMapping("/{appointmentId}/status")
-    public ResponseEntity<Appointment> updateAppointmentStatus(@PathVariable Long appointmentId, @RequestParam AppStatus newStatus) {
-        logger.info("PUT /appointments/{}/status called with status: {}", appointmentId, newStatus);
+    @PutMapping("/update-status/{appId}")
+    public ResponseEntity<Map<String, Object>> updateAppointmentStatus(
+            @PathVariable String appId,
+            @RequestBody Map<String, String> requestBody) {
         try {
-            Appointment updatedAppointment = appointmentService.updateAppointmentStatus(appointmentId, newStatus);
-            return ResponseEntity.ok(updatedAppointment);
+            String statusStr = requestBody.get("status");
+            if (statusStr == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Status is required");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            AppStatus newStatus;
+            try {
+                newStatus = AppStatus.valueOf(statusStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Invalid status value");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            // Lấy appointment hiện tại từ service để kiểm tra trạng thái cũ
+            Appointment currentAppointment = appointmentService.getAppointmentById(appId); // Giả sử có phương thức này
+            if (currentAppointment == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Appointment not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            }
+
+            AppStatus currentStatus = currentAppointment.getStatus();
+
+            // Kiểm tra nếu đang từ CANCELLED muốn chuyển sang trạng thái khác
+            if (currentStatus == AppStatus.CANCELLED && newStatus != AppStatus.CANCELLED) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Cannot change status from CANCELLED to another status");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            // Kiểm tra nếu đang từ COMPLETED muốn chuyển về CONFIRMED
+            if (currentStatus == AppStatus.COMPLETED && newStatus == AppStatus.CONFIRMED) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Cannot change status from COMPLETED back to CONFIRMED");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            // Nếu không vi phạm các điều kiện trên, cập nhật trạng thái
+            Appointment updatedAppointment = appointmentService.updateStatus(appId, newStatus);
+            Map<String, Object> successResponse = new HashMap<>();
+            successResponse.put("message", "Appointment status updated successfully");
+            successResponse.put("appointment", updatedAppointment);
+            return ResponseEntity.ok(successResponse);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        } catch (Exception e) {
+            logger.error("Error updating appointment status", e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 }

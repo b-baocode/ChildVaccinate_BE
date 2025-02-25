@@ -1,62 +1,41 @@
 package com.swp.ChildrenVaccine.entities;
 
-import com.swp.ChildrenVaccine.enums.Severity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
-//@Data
+@Getter
+@Setter
 @Entity
+@Table(name = "vaccination_reactions")
 public class VaccinationReaction {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "reaction_id", length = 50)
     private String id;
-    private LocalDateTime reactionDate; // Ngày và giờ xảy ra phản ứng
-    private String symptoms; // Các triệu chứng phản ứng
-    private Severity severity; // Mức độ phản ứng (nhẹ, nặng, khẩn cấp)
-    private String notes;
 
-    public String getId() {
-        return id;
-    }
+    @ManyToOne
+    @JoinColumn(name = "child_id", nullable = false)
+    private Child child;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    @ManyToOne
+    @JoinColumn(name = "appointment_id", nullable = false)
+    private Appointment appointment;
 
-    public LocalDateTime getReactionDate() {
-        return reactionDate;
-    }
+    @Column(name = "symptoms", columnDefinition = "TEXT")
+    private String symptoms;
 
-    public void setReactionDate(LocalDateTime reactionDate) {
-        this.reactionDate = reactionDate;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "severity", nullable = false)
+    private Severity severity;
 
-    public String getSymptoms() {
-        return symptoms;
-    }
+    @Column(name = "reaction_date", nullable = false)
+    private LocalDateTime reactionDate;
 
-    public void setSymptoms(String symptoms) {
-        this.symptoms = symptoms;
-    }
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    public Severity getSeverity() {
-        return severity;
-    }
-
-    public void setSeverity(Severity severity) {
-        this.severity = severity;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public enum Severity {
+        MILD, MODERATE, SEVERE
     }
 }
