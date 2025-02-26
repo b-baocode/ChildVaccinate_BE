@@ -23,7 +23,7 @@ public class Appointment {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customerId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "child_id")
     private Child childId;
 
@@ -41,11 +41,11 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "vaccine_id")
     private Vaccine vaccineId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "package_id")
     private VacinePackage packageId;
 

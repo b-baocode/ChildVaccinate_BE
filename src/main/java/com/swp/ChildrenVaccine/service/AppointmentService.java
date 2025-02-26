@@ -1,6 +1,7 @@
 package com.swp.ChildrenVaccine.service;
 
 import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
+import com.swp.ChildrenVaccine.dto.response.AppointmentSimpleDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Child;
 import com.swp.ChildrenVaccine.entities.Customer;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -111,5 +113,12 @@ public class AppointmentService {
     public Appointment getAppointmentById(String appId) {
         return appointmentRepository.findByAppId(appId)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+    }
+
+    public List<AppointmentSimpleDTO> getCompletedAppointmentsWithoutFeedback() {
+        return appointmentRepository.findCompletedAppointmentsWithoutFeedback()
+                .stream()
+                .map(AppointmentSimpleDTO::new)
+                .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,8 @@
 package com.swp.ChildrenVaccine.controller;
 
 import com.swp.ChildrenVaccine.dto.response.AppointmentDTO;
+import com.swp.ChildrenVaccine.dto.response.AppointmentFeedbackDTO;
+import com.swp.ChildrenVaccine.dto.response.AppointmentSimpleDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
 import com.swp.ChildrenVaccine.enums.AppStatus;
@@ -133,5 +135,11 @@ public class AppointmentController {
             errorResponse.put("error", "Internal server error");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
+    }
+
+    @GetMapping("/completed-without-feedback")
+    public ResponseEntity<List<AppointmentSimpleDTO>> getCompletedAppointmentsWithoutFeedback() {
+        List<AppointmentSimpleDTO> appointments = appointmentService.getCompletedAppointmentsWithoutFeedback();
+        return ResponseEntity.ok(appointments);
     }
 }

@@ -31,6 +31,11 @@ public class ChildService {
         this.customerRepository = customerRepository;
     }
 
+    public List<ChildDTO> getAllChildren() {
+        List<Child> children = childRepository.findAll();
+        return children.stream().map(ChildDTO::new).toList(); // Chuyển đổi entity -> DTO
+    }
+
     public List<ChildDTO> getChildrenByCustomerId(String customerId) {
         Customer customer = customerRepository.findById(customerId).orElse(null);
         if (customer == null) {
@@ -54,19 +59,22 @@ public class ChildService {
         newChild.setWeight(child.getWeight());
         newChild.setHeight(child.getHeight());
         newChild.setBloodType(child.getBloodType());
+        newChild.setAllergies(child.getAllergies());
+        newChild.setHealthNote(child.getHealthNote());
 
         childRepository.save(newChild); // Save the child information to the database
     }
 
 
     public String generateChildId() {
-        Optional<Child> lastChild = childRepository.findTopByOrderByChildId();
+        Optional<Child> lastChild = childRepository.findTopByOrderByChildIdDesc();
+
         if (lastChild.isPresent()) {
-            String lastId = lastChild.get().getChildId(); // VD: "CHI001"
-            int number = Integer.parseInt(lastId.substring(3)) + 1;
-            return String.format("CH%03d", number);
+            String lastId = lastChild.get().getChildId(); // VD: "CHD006"
+            int number = Integer.parseInt(lastId.substring(3)) + 1; // Lấy số và +1
+            return String.format("CHD%03d", number); // Format lại ID
         }
-        return "CH001"; // ID đầu tiên
+        return "CHD001";
     }
 
     public void updateChild(String id, Child child) {
