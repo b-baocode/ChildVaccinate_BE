@@ -25,63 +25,65 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AppointmentRegisterRequest {
-        @NotNull
-        private String customerId;
+    @NotNull
+    private String customerId;
 
-        @NotNull
-        private String childId;
+    @NotNull
+    private String childId;
 
-        private String vaccineId;
-        private String packageId;
+    private String vaccineId;
+    private String packageId;
 
-        @NotNull
-        @JsonFormat(pattern = "yyyy-MM-dd")
+    @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate appointmentDate;
+
+    @NotNull
+    @JsonFormat(pattern = "HH:mm:ss")
+    private LocalTime appointmentTime;
+
+    // Đảm bảo chỉ có 1 trong 2 giá trị được điền
+    @AssertTrue(message = "Chỉ được chọn một trong vaccineId hoặc packageId")
+    private boolean isValidServiceSelection() {
+        return (vaccineId != null && packageId == null) || (vaccineId == null && packageId != null);
+    }
+
+    public class Appointment {
+
+        @Id
+        @Column(name = "app_id", length = 50)
+        private String appId;
+
+        @ManyToOne
+        @JoinColumn(name = "customer_id", nullable = false)
+        private Customer customerId;
+
+        @OneToOne
+        @JoinColumn(name = "child_id")
+        private Child childId;
+
+        @Column(name = "appointment_date", nullable = false)
         private LocalDate appointmentDate;
 
-        @NotNull
-        @JsonFormat(pattern = "HH:mm:ss")
+        @Column(name = "appointment_time", nullable = false)
         private LocalTime appointmentTime;
 
-        // Đảm bảo chỉ có 1 trong 2 giá trị được điền
-        @AssertTrue(message = "Chỉ được chọn một trong vaccineId hoặc packageId")
-        private boolean isValidServiceSelection() {
-                return (vaccineId != null && packageId == null) || (vaccineId == null && packageId != null);
-        }public class Appointment {
+        @Column(name = "status", length = 15, nullable = false)
+        @Enumerated(EnumType.STRING)
+        private AppStatus status;
 
-                @Id
-                @Column(name = "app_id", length = 50)
-                private String appId;
+        @Column(name = "payment_status", length = 10, nullable = false)
+        @Enumerated(EnumType.STRING)
+        private PaymentStatus paymentStatus;
 
-                @ManyToOne
-                @JoinColumn(name = "customer_id", nullable = false)
-                private Customer customerId;
+        @OneToOne
+        @JoinColumn(name = "vaccine_id")
+        private Vaccine vaccineId;
 
-                @OneToOne
-                @JoinColumn(name = "child_id")
-                private Child childId;
+        @OneToOne
+        @JoinColumn(name = "package_id")
+        private VacinePackage packageId;
 
-                @Column(name = "appointment_date", nullable = false)
-                private LocalDate appointmentDate;
-
-                @Column(name = "appointment_time", nullable = false)
-                private LocalTime appointmentTime;
-
-                @Column(name = "status", length = 15, nullable = false)
-                @Enumerated(EnumType.STRING)
-                private AppStatus status;
-
-                @Column(name = "payment_status", length = 10, nullable = false)
-                @Enumerated(EnumType.STRING)
-                private PaymentStatus paymentStatus;
-
-                @OneToOne
-                @JoinColumn(name = "vaccine_id")
-                private Vaccine vaccineId;
-
-                @OneToOne
-                @JoinColumn(name = "package_id")
-                private VacinePackage packageId;
-
-        }
+    }
 
 }

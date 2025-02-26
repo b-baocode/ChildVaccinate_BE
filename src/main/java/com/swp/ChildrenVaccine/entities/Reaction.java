@@ -1,5 +1,6 @@
 package com.swp.ChildrenVaccine.entities;
 
+import com.swp.ChildrenVaccine.enums.Severity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "vaccination_reactions")
-public class VaccinationReaction {
+public class Reaction {
 
     @Id
     @Column(name = "reaction_id", length = 50)
@@ -35,7 +36,7 @@ public class VaccinationReaction {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public enum Severity {
-        MILD, MODERATE, SEVERE
-    }
+
+
+
 }
