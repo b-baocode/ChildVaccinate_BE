@@ -30,17 +30,24 @@ public class ReactionService {
         return reactionRepository.findByChild_ChildId(childId);
     }
 
+
     public Reaction createReaction(ReactionRequest reactionRequest) {
         Optional<Child> child = childRepository.findById(reactionRequest.getChildId());
         Optional<Appointment> appointment = appointmentRepository.findById(reactionRequest.getAppointmentId());
 
         if (child.isPresent() && appointment.isPresent()) {
             Reaction reaction = new Reaction();
+
+            // Tạo ID cho reaction
+            String reactionId = "REAC" + System.currentTimeMillis();
+            reaction.setId(reactionId);
+
             reaction.setChild(child.get());
             reaction.setAppointment(appointment.get());
             reaction.setSymptoms(reactionRequest.getSymptoms());
             reaction.setSeverity(reactionRequest.getSeverity());
             reaction.setReactionDate(reactionRequest.getReactionDate());
+
             return reactionRepository.save(reaction);
         } else {
             throw new IllegalArgumentException("Invalid Child or Appointment ID");

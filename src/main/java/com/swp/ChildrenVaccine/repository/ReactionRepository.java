@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface ReactionRepository extends JpaRepository<Reaction, String> {
     List<Reaction> findByChild_ChildId(String childId);
+
 }
