@@ -1,11 +1,14 @@
 package com.swp.ChildrenVaccine.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "vaccines")
+@Getter
+@Setter
 public class Vaccine {
 
     @Id
@@ -30,61 +33,5 @@ public class Vaccine {
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    // Getters and Setters
 
-    public String getVaccineId() {
-        return vaccineId;
-    }
-
-    public void setVaccineId(String vaccineId) {
-        this.vaccineId = vaccineId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    public Integer getShot() {
-        return shot;
-    }
-
-    public void setShot(Integer shot) {
-        this.shot = shot;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
 }

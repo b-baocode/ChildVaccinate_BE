@@ -23,17 +23,17 @@ public class OtpService {
 
     @Transactional
     public void saveOtp(String email, String otp) {
-        // Tìm bản ghi OTP theo email
+        // Tìm OTP theo email
         Optional<OtpToken> existingToken = otpTokenRepository.findByEmail(email);
 
         if (existingToken.isPresent()) {
-            // Nếu email đã tồn tại, cập nhật OTP và thời gian hết hạn
+            // Nếu email đã tồn tại, cập nhật lại OTP và thời gian hết hạn
             OtpToken otpToken = existingToken.get();
             otpToken.setOtp(otp);
             otpToken.setExpiryTime(LocalDateTime.now().plusMinutes(5));
             otpTokenRepository.save(otpToken);
         } else {
-            // Nếu email chưa tồn tại, tạo bản ghi mới
+            // Nếu email chưa tồn tại, tạo otp mới
             OtpToken newOtpToken = new OtpToken();
             newOtpToken.setEmail(email);
             newOtpToken.setOtp(otp);

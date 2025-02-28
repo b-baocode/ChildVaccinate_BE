@@ -25,25 +25,25 @@ public class AppointmentService {
 
     //Get all package list
 
-    public void createAppointment(String customerId, String childId, String vaccineId, String packageId, LocalDate appointmentDate, LocalTime appointmentTime) throws Exception {
-
-        // Validate that either a vaccine or a package is selected, but not both
-        if ((vaccineId == null && packageId == null) || (vaccineId != null && packageId != null)) {
-            throw new Exception("Either vaccine or package must be selected, but not both");
-        }
-
-        // Create and save the appointment
-        Appointment appointment = new Appointment();
-        appointment.getCustomerId();
-        appointment.setChildId(childId);
-        appointment.setVaccineId(vaccineId);
-        appointment.setPackageId(packageId);
-        appointment.setAppointmentDate(appointmentDate);
-        appointment.setAppointmentTime(appointmentTime);
-        appointment.setStatus(Appointment.Status.CONFIRMED);
-
-        appointmentRepository.save(appointment);
-    }
+//    public void createAppointment(String customerId, String childId, String vaccineId, String packageId, LocalDate appointmentDate, LocalTime appointmentTime) throws Exception {
+//
+//        // Validate that either a vaccine or a package is selected, but not both
+//        if ((vaccineId == null && packageId == null) || (vaccineId != null && packageId != null)) {
+//            throw new Exception("Either vaccine or package must be selected, but not both");
+//        }
+//
+//        // Create and save the appointment
+//        Appointment appointment = new Appointment();
+//        appointment.getCustomerId();
+//        appointment.setChildId(childId);
+//        appointment.setVaccineId(vaccineId);
+//        appointment.setPackageId(packageId);
+//        appointment.setAppointmentDate(appointmentDate);
+//        appointment.setAppointmentTime(appointmentTime);
+//        appointment.setStatus(Appointment.Status.CONFIRMED);
+//
+//        appointmentRepository.save(appointment);
+//    }
 
     public List<Appointment> findAllAppointments() {
         return appointmentRepository.findAll();

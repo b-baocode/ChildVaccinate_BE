@@ -15,20 +15,20 @@ public class AppointmentController {
     private AppointmentService appointmentService;
 
 
-    @PostMapping("/register-vaccination")
-    public ResponseEntity<String> createAppointment(@RequestBody AppointmentRegisterRequest request) {
-        try {
-            appointmentService.createAppointment(
-                    request.getCustomerId(),
-                    request.getChildId(),
-                    request.getVaccineId(),
-                    request.getPackageId(),
-                    request.getAppointmentDate(),
-                    request.getAppointmentTime()
-            );
-            return ResponseEntity.ok("Appointment created successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
+//    @PostMapping("/register-vaccination")
+//    public ResponseEntity<String> createAppointment(@RequestBody AppointmentRegisterRequest request) {
+//        try {
+//            appointmentService.createAppointment(
+//                    request.getCustomerId(),
+//                    request.getChildId(),
+//                    request.getVaccineId(),
+//                    request.getPackageId(),
+//                    request.getAppointmentDate(),
+//                    request.getAppointmentTime()
+//            );
+//            return ResponseEntity.ok("Appointment created successfully");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+//        }
+//    }
 }
