@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/payment")
@@ -32,7 +33,11 @@ public class VNPayController {
             error.put("error", "AppointmentId is not correct");
             return ResponseEntity.badRequest().body(error);
         }
-
+        if (appointmentId.getPaymentStatus() == PaymentStatus.PAID) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Appointment " + appointmentId.getAppId() + " đã thanh toán rồi");
+            return ResponseEntity.ok(response);
+        }
         //tao url vnpay
         String baseUrl = request.getScheme() + "://" + request.getServerName();
         if(request.getServerPort() != 80 && request.getServerPort() != 443) {
