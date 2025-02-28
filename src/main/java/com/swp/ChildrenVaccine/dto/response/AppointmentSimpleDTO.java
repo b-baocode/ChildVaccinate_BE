@@ -18,9 +18,9 @@ public class AppointmentSimpleDTO {
 
     public AppointmentSimpleDTO(Appointment appointment) {
         this.appId = appointment.getAppId();
-        this.cusId = appointment.getCustomerId().getCusId();
-        this.cusName = appointment.getCustomerId().getUser().getFullName();
-        this.childName = appointment.getChildId().getFullName();
+        this.cusId = appointment.getCustomer().getCusId();
+        this.cusName = appointment.getCustomer().getUser().getFullName();
+        this.childName = appointment.getChild().getFullName();
         this.appointmentDate = appointment.getAppointmentDate();
 
         if (appointment.getVaccineId() != null) {

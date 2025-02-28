@@ -21,11 +21,11 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customerId;
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "child_id")
-    private Child childId;
+    private Child child;
 
     @Column(name = "appointment_date", nullable = false)
     private LocalDate appointmentDate;

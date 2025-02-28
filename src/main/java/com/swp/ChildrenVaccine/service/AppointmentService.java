@@ -1,6 +1,7 @@
 package com.swp.ChildrenVaccine.service;
 
 import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
+import com.swp.ChildrenVaccine.dto.response.AppointmentDTO;
 import com.swp.ChildrenVaccine.dto.response.AppointmentSimpleDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Child;
@@ -48,12 +49,12 @@ public class AppointmentService {
         // Lấy Customer từ database
         Customer customer = customerRepository.findById(request.getCustomerId())
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
-        appointment.setCustomerId(customer);
+        appointment.setCustomer(customer);
 
         // Lấy Child từ database
         Child child = childRepository.findById(request.getChildId())
                 .orElseThrow(() -> new RuntimeException("Child not found"));
-        appointment.setChildId(child);
+        appointment.setChild(child);
 
         // Lấy Vaccine từ database (nếu có)
         if (request.getVaccineId() != null) {
@@ -78,7 +79,7 @@ public class AppointmentService {
         if (lastId != null && lastId.matches("APP\\d+")) {
             newId = Integer.parseInt(lastId.replace("APP", "")) + 1;
         }
-        appointment.setAppId(String.format("APP%03d", newId));
+        appointment.setAppId(String.format("APP%03d", newId));  
 
         appointment.setStatus(AppStatus.CONFIRMED);
         appointment.setPaymentStatus(PaymentStatus.PENDING);
@@ -119,6 +120,13 @@ public class AppointmentService {
         return appointmentRepository.findCompletedAppointmentsWithoutFeedback()
                 .stream()
                 .map(AppointmentSimpleDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<AppointmentDTO> getAppointmentsByChildId(String childId) {
+        List<Appointment> appointments = appointmentRepository.findByChildId(childId);
+        return appointments.stream()
+                .map(AppointmentDTO::new)
                 .collect(Collectors.toList());
     }
 }

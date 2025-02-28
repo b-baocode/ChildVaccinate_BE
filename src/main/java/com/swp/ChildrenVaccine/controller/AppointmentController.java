@@ -142,4 +142,13 @@ public class AppointmentController {
         List<AppointmentSimpleDTO> appointments = appointmentService.getCompletedAppointmentsWithoutFeedback();
         return ResponseEntity.ok(appointments);
     }
+
+    @GetMapping("/byChild/{childId}")
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByChildId(@PathVariable String childId) {
+        List<AppointmentDTO> appointments = appointmentService.getAppointmentsByChildId(childId);
+        if (appointments.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(appointments);
+    }
 }

@@ -82,7 +82,6 @@ public class ChildService {
         if (childToUpdate == null) {
             return;
         }
-        childToUpdate.setFullName(child.getFullName());
         childToUpdate.setWeight(child.getWeight());
         childToUpdate.setHeight(child.getHeight());
         childToUpdate.setHealthNote(child.getHealthNote());

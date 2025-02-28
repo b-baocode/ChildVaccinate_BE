@@ -21,8 +21,8 @@ public class AppointmentDTO {
 
     public AppointmentDTO(Appointment appointment) {
         this.appId = appointment.getAppId();
-        this.customerId = appointment.getCustomerId().getCusId();
-        this.childId = appointment.getChildId().getChildId();
+        this.customerId = appointment.getCustomer().getCusId();
+        this.childId = appointment.getChild().getChildId();
         this.serviceId = (appointment.getVaccineId() != null)
                 ? appointment.getVaccineId().getVaccineId()
                 : appointment.getPackageId().getPackageId();
