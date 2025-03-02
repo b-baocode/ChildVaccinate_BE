@@ -25,10 +25,12 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT MAX(a.appId) FROM Appointment a WHERE a.appId LIKE 'APP%'")
     String findMaxAppId();
 
-    @Query("SELECT a FROM Appointment a WHERE a.status = 'COMPLETED' AND a.appId NOT IN (SELECT r.appointment.appId FROM RatingFeedback r)")
-    List<Appointment> findCompletedAppointmentsWithoutFeedback();
+    @Query("SELECT a FROM Appointment a WHERE a.customer.cusId = :cusId AND a.status = 'COMPLETED' AND a.appId NOT IN (SELECT r.appointment.appId FROM RatingFeedback r)")
+    List<Appointment> findCompletedAppointmentsWithoutFeedback(@Param("cusId") String cusId);
 
     @Query("SELECT a FROM Appointment a WHERE a.child.childId = :childId")
     List<Appointment> findByChildId(@Param("childId") String childId);
 
+    @Query("SELECT a FROM Appointment a WHERE a.customer.cusId = :cusId")
+    List<Appointment> findByCustomerId(@Param("cusId") String cusId);
 }

@@ -137,15 +137,27 @@ public class AppointmentController {
         }
     }
 
-    @GetMapping("/completed-without-feedback")
-    public ResponseEntity<List<AppointmentSimpleDTO>> getCompletedAppointmentsWithoutFeedback() {
-        List<AppointmentSimpleDTO> appointments = appointmentService.getCompletedAppointmentsWithoutFeedback();
+    @GetMapping("/completed-without-feedback/{cusId}")
+    public ResponseEntity<List<AppointmentSimpleDTO>> getCompletedAppointmentsWithoutFeedback(@PathVariable String cusId) {
+        List<AppointmentSimpleDTO> appointments = appointmentService.getCompletedAppointmentsWithoutFeedback(cusId);
+        if (appointments.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(appointments);
     }
 
     @GetMapping("/byChild/{childId}")
     public ResponseEntity<List<AppointmentDTO>> getAppointmentsByChildId(@PathVariable String childId) {
         List<AppointmentDTO> appointments = appointmentService.getAppointmentsByChildId(childId);
+        if (appointments.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(appointments);
+    }
+
+    @GetMapping("/byCustomer/{cusId}")
+    public ResponseEntity<List<Appointment>> getAppointmentsByCustomerId(@PathVariable String cusId) {
+        List<Appointment> appointments = appointmentService.getAppointmentsByCustomerId(cusId);
         if (appointments.isEmpty()) {
             return ResponseEntity.noContent().build();
         }

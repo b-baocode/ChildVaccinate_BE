@@ -116,8 +116,8 @@ public class AppointmentService {
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
     }
 
-    public List<AppointmentSimpleDTO> getCompletedAppointmentsWithoutFeedback() {
-        return appointmentRepository.findCompletedAppointmentsWithoutFeedback()
+    public List<AppointmentSimpleDTO> getCompletedAppointmentsWithoutFeedback(String cusId) {
+        return appointmentRepository.findCompletedAppointmentsWithoutFeedback(cusId)
                 .stream()
                 .map(AppointmentSimpleDTO::new)
                 .collect(Collectors.toList());
@@ -128,5 +128,9 @@ public class AppointmentService {
         return appointments.stream()
                 .map(AppointmentDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    public List<Appointment> getAppointmentsByCustomerId(String cusId) {
+        return appointmentRepository.findByCustomerId(cusId);
     }
 }
