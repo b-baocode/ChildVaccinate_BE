@@ -69,15 +69,25 @@ public class VNPayConfig {
     }
 
     public static String getIpAddress(HttpServletRequest request) {
-        String ip = request.getHeader("X-FORWARDED-FOR");
-        if (ip == null || ip.isEmpty()) {
-            try {
-                ip = InetAddress.getLocalHost().getHostAddress();
-            } catch (UnknownHostException e) {
-                ip = "127.0.0.1"; // Fallback nếu không lấy được IP
+//        String ip = request.getHeader("X-FORWARDED-FOR");
+//        if (ip == null || ip.isEmpty()) {
+//            try {
+//                ip = InetAddress.getLocalHost().getHostAddress();
+//            } catch (UnknownHostException e) {
+//                ip = "127.0.0.1"; // Fallback nếu không lấy được IP
+//            }
+//        }
+//        return ip;
+        String ipAdress;
+        try {
+            ipAdress = request.getHeader("X-FORWARDED-FOR");
+            if (ipAdress == null) {
+                ipAdress = request.getLocalAddr();
             }
+        } catch (Exception e) {
+            ipAdress = "Invalid IP:" + e.getMessage();
         }
-        return ip;
+        return ipAdress;
     }
 
     public static String getRandomNumber(int len) {

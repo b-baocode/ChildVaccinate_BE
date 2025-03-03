@@ -7,7 +7,9 @@ import com.swp.ChildrenVaccine.entities.RevokedToken;
 import com.swp.ChildrenVaccine.entities.Staff;
 import com.swp.ChildrenVaccine.entities.User;
 import com.swp.ChildrenVaccine.exception.EmailAlreadyExistsException;
+import com.swp.ChildrenVaccine.repository.CustomerRepository;
 import com.swp.ChildrenVaccine.repository.RevokedTokenRepository;
+import com.swp.ChildrenVaccine.repository.StaffRepository;
 import com.swp.ChildrenVaccine.repository.UserRepository;
 import com.swp.ChildrenVaccine.service.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,6 +53,12 @@ public class AuthenticationAPI {
     @Autowired
     private final EmailService emailService;
 
+    @Autowired
+    private final CustomerRepository customerRepository;
+
+    @Autowired
+    private final StaffRepository staffRepository;
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpSession session) {
@@ -60,13 +68,23 @@ public class AuthenticationAPI {
 
         // Extract email from request and store it in session
         if (customer != null) {
-            // Lưu toàn bộ thông tin Customer vào session
-            session.setAttribute("loggedInCustomer", customer);
+            if (!customer.getUser().isActive()) {
+                customer.getUser().setActive(true); // Cập nhật trạng thái active
+                customerRepository.save(customer); // Lưu vào database
+            }
+            session.setAttribute("loggedInCustomer", customer); // Lưu vào session
+            return ResponseEntity.ok(response);
         }
 
+        // Kiểm tra nếu user là Staff
         Staff staff = staffService.findByEmail(request.getEmail());
         if (staff != null) {
-            session.setAttribute("loggedInStaff", staff);
+            if (!staff.getUser().isActive()) {
+                staff.getUser().setActive(true); // Cập nhật trạng thái active
+                staffRepository.save(staff); // Lưu vào database
+            }
+            session.setAttribute("loggedInStaff", staff); // Lưu vào session
+            return ResponseEntity.ok(response);
         }
         return ResponseEntity.ok(response);
     }
@@ -82,6 +100,7 @@ public class AuthenticationAPI {
     }
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpSession session) {
+        // Lấy token từ request
         String token = tokenService.extractToken(request);
         if (token != null) {
             RevokedToken revokedToken = new RevokedToken();
@@ -89,7 +108,31 @@ public class AuthenticationAPI {
             revokedToken.setRevokedAt(LocalDateTime.now());
             revokedTokenRepository.save(revokedToken);
         }
+
+        // Lấy thông tin người dùng từ session
+        Object loggedInUser = session.getAttribute("loggedInCustomer");
+        if (loggedInUser == null) {
+            loggedInUser = session.getAttribute("loggedInStaff");
+        }
+
+        if (loggedInUser != null) {
+            User user = null;
+
+            if (loggedInUser instanceof Customer) {
+                user = ((Customer) loggedInUser).getUser();
+            } else if (loggedInUser instanceof Staff) {
+                user = ((Staff) loggedInUser).getUser();
+            }
+
+            if (user != null) {
+                user.setActive(false); // Đặt active thành false (0 trong database)
+                userRepository.save(user);
+            }
+        }
+
+        // Hủy session
         session.invalidate();
+
         return ResponseEntity.ok("Đăng xuất thành công!");
     }
 

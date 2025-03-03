@@ -55,6 +55,7 @@ public class VNPayService {
         //tìm giá của vaccine và gói vaccine và parse và * 100 theo yêu cầu của vnPay
         BigDecimal amount = calculateAmount(appointment).multiply(BigDecimal.valueOf(100));
         amount = amount.setScale(0, RoundingMode.HALF_UP);
+        //tạo param gửi đến vnPAy
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
