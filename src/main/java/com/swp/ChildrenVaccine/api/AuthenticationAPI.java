@@ -109,31 +109,31 @@ public class AuthenticationAPI {
             revokedTokenRepository.save(revokedToken);
         }
 
-        // Lấy thông tin người dùng từ session
-        Object loggedInUser = session.getAttribute("loggedInCustomer");
-        if (loggedInUser == null) {
-            loggedInUser = session.getAttribute("loggedInStaff");
-        }
-
-        if (loggedInUser != null) {
-            User user = null;
-
-            if (loggedInUser instanceof Customer) {
-                user = ((Customer) loggedInUser).getUser();
-            } else if (loggedInUser instanceof Staff) {
-                user = ((Staff) loggedInUser).getUser();
-            }
-
+        // Kiểm tra session của Customer
+        Customer loggedInCustomer = (Customer) session.getAttribute("loggedInCustomer");
+        if (loggedInCustomer != null) {
+            User user = loggedInCustomer.getUser();
             if (user != null) {
-                user.setActive(false); // Đặt active thành false (0 trong database)
+                user.setActive(false); // Đặt trạng thái active thành false
                 userRepository.save(user);
             }
+            session.removeAttribute("loggedInCustomer"); // Xóa session của Customer
+            return ResponseEntity.ok("Đăng xuất thành công (Customer)!");
         }
 
-        // Hủy session
-        session.invalidate();
+        // Kiểm tra session của Staff
+        Staff loggedInStaff = (Staff) session.getAttribute("loggedInStaff");
+        if (loggedInStaff != null) {
+            User user = loggedInStaff.getUser();
+            if (user != null) {
+                user.setActive(false); // Đặt trạng thái active thành false
+                userRepository.save(user);
+            }
+            session.removeAttribute("loggedInStaff"); // Xóa session của Staff
+            return ResponseEntity.ok("Đăng xuất thành công (Staff)!");
+        }
 
-        return ResponseEntity.ok("Đăng xuất thành công!");
+        return ResponseEntity.badRequest().body("Không tìm thấy người dùng để đăng xuất.");
     }
 
     @GetMapping("/customer/session-info")
