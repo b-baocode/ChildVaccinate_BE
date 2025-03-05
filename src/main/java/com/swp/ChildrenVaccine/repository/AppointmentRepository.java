@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,4 +34,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     @Query("SELECT a FROM Appointment a WHERE a.customer.cusId = :cusId")
     List<Appointment> findByCustomerId(@Param("cusId") String cusId);
+
+    @Query(value = "SELECT COUNT(*) FROM appointments WHERE appointment_date = :date AND CAST(appointment_time AS TIME) = CAST(:timeSlot AS TIME)", nativeQuery = true)
+    int countByDateAndTimeSlot(@Param("date") LocalDate date, @Param("timeSlot") String timeSlot);
+
 }

@@ -4,6 +4,7 @@ import com.swp.ChildrenVaccine.dto.request.LoginRequest;
 import com.swp.ChildrenVaccine.dto.request.RegisterRequest;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.entities.RevokedToken;
+import com.swp.ChildrenVaccine.entities.Staff;
 import com.swp.ChildrenVaccine.entities.User;
 import com.swp.ChildrenVaccine.exception.EmailAlreadyExistsException;
 import com.swp.ChildrenVaccine.repository.RevokedTokenRepository;
@@ -94,6 +95,17 @@ public class AuthenticationAPI {
         }
 
         return ResponseEntity.ok(customer);
+    }
+
+    @GetMapping("/staff/session-info")
+    public ResponseEntity<?> getStaffSessionInfo(HttpSession session) {
+        Staff staff = (Staff) session.getAttribute("loggedInStaff");
+
+        if (staff == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy thông tin staff trong session.");
+        }
+
+        return ResponseEntity.ok(staff);
     }
 
     @PostMapping("/request-otp")

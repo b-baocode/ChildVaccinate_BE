@@ -3,6 +3,7 @@ package com.swp.ChildrenVaccine.controller;
 import com.swp.ChildrenVaccine.dto.response.AppointmentDTO;
 import com.swp.ChildrenVaccine.dto.response.AppointmentFeedbackDTO;
 import com.swp.ChildrenVaccine.dto.response.AppointmentSimpleDTO;
+import com.swp.ChildrenVaccine.dto.response.TimeSlotAvailabilityDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
 import com.swp.ChildrenVaccine.enums.AppStatus;
@@ -162,5 +163,14 @@ public class AppointmentController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(appointments);
+    }
+
+    @GetMapping("/availability")
+    public ResponseEntity<TimeSlotAvailabilityDTO> checkTimeSlotAvailability(@RequestParam String date, @RequestParam String timeSlot) {
+        TimeSlotAvailabilityDTO availability = appointmentService.checkTimeSlotAvailability(date, timeSlot);
+        if (!availability.isAvailable()) {
+            return ResponseEntity.status(409).body(availability); // 409 Conflict
+        }
+        return ResponseEntity.ok(availability);
     }
 }

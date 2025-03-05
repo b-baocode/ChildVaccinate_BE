@@ -3,6 +3,7 @@ package com.swp.ChildrenVaccine.service;
 import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
 import com.swp.ChildrenVaccine.dto.response.AppointmentDTO;
 import com.swp.ChildrenVaccine.dto.response.AppointmentSimpleDTO;
+import com.swp.ChildrenVaccine.dto.response.TimeSlotAvailabilityDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Child;
 import com.swp.ChildrenVaccine.entities.Customer;
@@ -13,9 +14,16 @@ import com.swp.ChildrenVaccine.enums.PaymentStatus;
 
 import com.swp.ChildrenVaccine.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -133,4 +141,21 @@ public class AppointmentService {
     public List<Appointment> getAppointmentsByCustomerId(String cusId) {
         return appointmentRepository.findByCustomerId(cusId);
     }
+
+    public TimeSlotAvailabilityDTO checkTimeSlotAvailability(String date, String timeSlot) {
+        LocalDate appointmentDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
+        String formattedTimeSlot = LocalTime.parse(timeSlot, DateTimeFormatter.ISO_TIME)
+                .format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+
+        int currentCount = appointmentRepository.countByDateAndTimeSlot(appointmentDate, formattedTimeSlot);
+        System.out.println("Current count: " + currentCount);
+
+        int maxAllowed = 5;
+        boolean available = currentCount < maxAllowed;
+
+        return new TimeSlotAvailabilityDTO(currentCount, maxAllowed, available, timeSlot, date);
+    }
+
+
+
 }
