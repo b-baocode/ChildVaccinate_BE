@@ -27,31 +27,35 @@ public class VNPayController {
     private AppointmentRepository appointmentRepository;
 
     @PostMapping("/create/{appointmentId}")
-    public ResponseEntity<Map<String, String>> createPayment(@PathVariable Appointment appointmentId, HttpServletRequest request) {
-        if(appointmentId == null) {
+    public ResponseEntity<Map<String, String>> createPayment(@PathVariable String appointmentId, HttpServletRequest request) {
+        Optional<Appointment> appointmentOpt = appointmentRepository.findById(appointmentId);
+        if (!appointmentOpt.isPresent()) {
             Map<String, String> error = new HashMap<>();
             error.put("error", "AppointmentId is not correct");
             return ResponseEntity.badRequest().body(error);
         }
-        if (appointmentId.getPaymentStatus() == PaymentStatus.PAID) {
+
+        Appointment appointment = appointmentOpt.get();
+        if (appointment.getPaymentStatus() == PaymentStatus.PAID) {
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Appointment " + appointmentId.getAppId() + " đã thanh toán rồi");
+            response.put("message", "Appointment " + appointment.getAppId() + " đã thanh toán rồi");
             return ResponseEntity.ok(response);
         }
-        //tao url vnpay
+
+        // tao url vnpay
         String baseUrl = request.getScheme() + "://" + request.getServerName();
-        if(request.getServerPort() != 80 && request.getServerPort() != 443) {
+        if (request.getServerPort() != 80 && request.getServerPort() != 443) {
             baseUrl += ":" + request.getServerPort();
         }
 
         baseUrl = baseUrl.replaceAll("[\\n\\r]", "").replace("%0A", "").trim();
 
-        String vnPayUrl = vnPayService.createPayment(appointmentId, request, baseUrl);
+        String vnPayUrl = vnPayService.createPayment(appointment, request, baseUrl);
 
         Map<String, String> response = new HashMap<>();
         response.put("vnpayUrl", vnPayUrl);
 
-        return  ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/vnpay-return")

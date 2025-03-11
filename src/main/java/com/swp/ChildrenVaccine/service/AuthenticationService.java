@@ -87,7 +87,7 @@ public class AuthenticationService {
         user.setId(userId);
         user.setEmail(request.getEmail());
         user.setFullName(request.getFullName());
-        user.setPassword(request.getPassword()); // Mã hóa mật khẩu
+        user.setPassword(request.getPassword());
         user.setPhone(request.getPhone());
         user.setRole(RoleEnum.CUSTOMER); // Mặc định là CUSTOMER
         user.setActive(true);

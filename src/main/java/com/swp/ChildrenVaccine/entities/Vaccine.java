@@ -24,11 +24,11 @@ public class Vaccine {
     @Column(name = "manufacturer", length = 255)
     private String manufacturer;
 
-    @Column(name = "shot")
-    private Integer shot;
+//    @Column(name = "shot")
+//    private Integer shot;
 
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
+//    @Column(name = "quantity", nullable = false)
+//    private int quantity;
 
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
