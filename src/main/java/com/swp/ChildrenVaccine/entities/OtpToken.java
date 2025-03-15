@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Table(name = "otptokens")
+@Table(name = "otp_tokens")
 public class OtpToken {
 
     @Id
