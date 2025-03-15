@@ -36,8 +36,8 @@ public class AdminService {
         return decimalFormat.format(totalRevenue);
     }
 
-    public List<Vaccine> getTop5Vaccines() {
-        return appointmentRepository.findTop5Vaccines(PageRequest.of(0, 5));
+    public List<?> getTop5Vaccines() {
+        return appointmentRepository.findTop5Vaccines();
     }
 
 

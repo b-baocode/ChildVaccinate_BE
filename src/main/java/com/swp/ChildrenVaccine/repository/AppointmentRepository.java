@@ -53,7 +53,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT SUM(a.packageId.price) FROM Appointment a")
     Double getTotalRevenuePack();
 
-    @Query("SELECT a.vaccineId FROM Appointment a GROUP BY a.vaccineId ORDER BY COUNT(a.vaccineId) DESC")
-    List<Vaccine> findTop5Vaccines(Pageable pageable);
+    @Query("SELECT a.vaccineId FROM Appointment a WHERE a.vaccineId IS NOT NUll GROUP BY a.vaccineId ORDER BY COUNT(a.vaccineId) DESC")
+    List<?> findTop5Vaccines();
 
 }

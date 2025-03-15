@@ -50,6 +50,4 @@ public class Appointment {
     @JoinColumn(name = "package_id")
     private VacinePackage packageId;
 
-
-
 }

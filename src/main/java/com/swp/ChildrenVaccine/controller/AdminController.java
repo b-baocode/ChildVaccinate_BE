@@ -36,8 +36,8 @@ public class AdminController {
     }
 
     @GetMapping("/top-vaccines")
-    public ResponseEntity<List<Vaccine>> getTop5Vaccines() {
-        List<Vaccine> topVaccines = adminService.getTop5Vaccines();
+    public ResponseEntity<List<?>> getTop5Vaccines() {
+        List<?> topVaccines = adminService.getTop5Vaccines();
         return ResponseEntity.ok(topVaccines);
     }
 
