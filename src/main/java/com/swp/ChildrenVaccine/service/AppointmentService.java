@@ -3,12 +3,14 @@ package com.swp.ChildrenVaccine.service;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.entities.User;
+import com.swp.ChildrenVaccine.enums.AppStatus;
 import com.swp.ChildrenVaccine.repository.AppointmentRepository;
 import com.swp.ChildrenVaccine.repository.ChildRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -86,6 +88,37 @@ public class AppointmentService {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void checkAndCancelExpiredAppointments() {
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Appointment> allAppointments = appointmentRepository.findAll();
+        List<Appointment> expiredAppointments = allAppointments.stream()
+                .filter(a -> LocalDateTime.of(a.getAppointmentDate(), a.getAppointmentTime()).isBefore(now)
+                        && a.getStatus() != AppStatus.CANCELLED)
+                .toList();
+        for (Appointment appointment : expiredAppointments) {
+            appointment.setStatus(AppStatus.CANCELLED);
+            appointmentRepository.save(appointment);
+
+            // Gửi email thông báo hủy cuộc hẹn
+            Customer customer = appointment.getCustomerId();
+            User user = customer.getUser();
+            String email = user.getEmail();
+            String subject = "Thông báo hủy cuộc hẹn tại VNVC";
+            String body = "<h3>Xin chào " + user.getFullName() + ",</h3>"
+                    + "<p>Cuộc hẹn của bạn đã bị hủy do quá hạn:</p>"
+                    + "<ul>"
+                    + "<li><b>Tên Trẻ:</b> " + appointment.getChildId().getFullName() + "</li>"
+                    + "<li><b>Ngày hẹn:</b> " + appointment.getAppointmentDate() + "</li>"
+                    + "<li><b>Giờ hẹn:</b> " + appointment.getAppointmentTime() + "</li>"
+                    + "</ul>"
+                    + "<p>Vui lòng đặt lại lịch hẹn nếu cần.</p>"
+                    + "<br><p>Trân trọng,<br>Phòng khám VNVC</p>";
+
+            emailService.sendAppointmentNotification(email, subject, body);
         }
     }
 
