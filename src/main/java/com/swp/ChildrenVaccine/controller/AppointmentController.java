@@ -1,7 +1,9 @@
 package com.swp.ChildrenVaccine.controller;
 
+import com.swp.ChildrenVaccine.dto.request.RescheduleAppointmentRequest;
 import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
 import com.swp.ChildrenVaccine.service.AppointmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,21 @@ public class AppointmentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
         } else {
             return ResponseEntity.ok(message);
+        }
+    }
+
+    @PutMapping("/reschedule-appointment/{appointmentId}")
+    public ResponseEntity<String> rescheduleAppointment(
+            @PathVariable String appointmentId,
+            @Valid @RequestBody RescheduleAppointmentRequest request) {
+
+        boolean updated = appointmentService.rescheduleAppointment(appointmentId, request);
+
+        if (updated) {
+            return ResponseEntity.ok("Lịch hẹn đã được cập nhật thành công!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Không thể cập nhật lịch hẹn. Vui lòng kiểm tra thông tin!");
         }
     }
 

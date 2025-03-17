@@ -1,5 +1,6 @@
 package com.swp.ChildrenVaccine.service;
 
+import com.swp.ChildrenVaccine.dto.request.RescheduleAppointmentRequest;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.entities.User;
@@ -131,6 +132,22 @@ public class AppointmentService {
 
             emailService.sendAppointmentNotification(email, subject, body);
         }
+    }
+    public boolean rescheduleAppointment(String appointmentId, RescheduleAppointmentRequest request) {
+        Optional<Appointment> optionalAppointment = appointmentRepository.findByAppId(appointmentId);
+
+        if (optionalAppointment.isPresent()) {
+            Appointment appointment = optionalAppointment.get();
+
+            if (appointment.getStatus() == AppStatus.CANCELLED || appointment.getStatus() == AppStatus.COMPLETED) {
+                return false; // Không thể thay đổi cuộc hẹn đã cancel hoặc đã complete
+            }
+            appointment.setAppointmentDate(request.getNewDate());
+            appointment.setAppointmentTime(request.getNewTime());
+            appointmentRepository.save(appointment);
+            return true;
+        }
+        return false;
     }
 
 
