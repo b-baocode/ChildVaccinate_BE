@@ -17,11 +17,14 @@ public class AppointmentController {
 
     @PostMapping("/send-appointment-email/{appointmentId}")
     public ResponseEntity<String> sendAppointmentEmail(@PathVariable String appointmentId) {
-        boolean success = appointmentService.sendAppointmentEmail(appointmentId);
-        if (success) {
-            return ResponseEntity.ok("Email thông báo đã được gửi thành công!");
+        String message = appointmentService.sendAppointmentEmail(appointmentId);
+
+        if (message.contains("đã gửi email trước đó")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+        } else if (message.contains("Không tìm thấy")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy cuộc hẹn!");
+            return ResponseEntity.ok(message);
         }
     }
 

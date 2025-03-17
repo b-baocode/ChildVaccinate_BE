@@ -49,4 +49,7 @@ public class Appointment {
     @JoinColumn(name = "package_id")
     private VacinePackage packageId;
 
+    @Column(name = "is_email_sent", nullable = false, columnDefinition = "BIT DEFAULT 0")
+    private boolean isEmailSent = false;
+
 }

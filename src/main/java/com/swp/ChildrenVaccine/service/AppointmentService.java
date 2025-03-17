@@ -61,11 +61,17 @@ public class AppointmentService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy cuộc hẹn với ID: " + appId));
     }
 
-    public boolean sendAppointmentEmail(String appointmentId) {
+    public String sendAppointmentEmail(String appointmentId) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
 
         if (optionalAppointment.isPresent()) {
             Appointment appointment = optionalAppointment.get();
+
+            // Kiểm tra nếu email đã gửi trước đó
+            if (appointment.isEmailSent()) {
+                return "Cuộc hẹn " + appointmentId + " đã gửi email trước đó, không gửi lại.";
+            }
+
             Customer customer = appointment.getCustomerId();
             User user = customer.getUser();
 
@@ -85,10 +91,15 @@ public class AppointmentService {
                     + "<br><p>Trân trọng,<br>Phòng khám VNVC</p>";
 
             emailService.sendAppointmentNotification(email, subject, body);
-            return true;
-        } else {
-            return false;
+
+            // Cập nhật trạng thái đã gửi email
+            appointment.setEmailSent(true);
+            appointmentRepository.save(appointment);
+
+            return "Email xác nhận cuộc hẹn " + appointmentId + " đã được gửi thành công.";
         }
+
+        return "Không tìm thấy cuộc hẹn với ID: " + appointmentId;
     }
 
     public void checkAndCancelExpiredAppointments() {
@@ -97,7 +108,7 @@ public class AppointmentService {
         List<Appointment> allAppointments = appointmentRepository.findAll();
         List<Appointment> expiredAppointments = allAppointments.stream()
                 .filter(a -> LocalDateTime.of(a.getAppointmentDate(), a.getAppointmentTime()).isBefore(now)
-                        && a.getStatus() != AppStatus.CANCELLED)
+                        && a.getStatus() == AppStatus.CONFIRMED)
                 .toList();
         for (Appointment appointment : expiredAppointments) {
             appointment.setStatus(AppStatus.CANCELLED);
@@ -121,6 +132,7 @@ public class AppointmentService {
             emailService.sendAppointmentNotification(email, subject, body);
         }
     }
+
 
 
 
