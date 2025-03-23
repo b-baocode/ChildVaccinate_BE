@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @Entity
 @Table(name = "vaccination_records")
-public class VaccinationRecord {
+public class Record {
 
     @Id
     @Column(name = "vaccination_records_id", length = 50)

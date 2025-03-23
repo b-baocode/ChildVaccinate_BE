@@ -28,11 +28,15 @@ public class VaccinationReaction {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "severity", nullable = false)
-    private Severity severity;
+    Severity severity;
 
     @Column(name = "reaction_date", nullable = false)
     private LocalDateTime reactionDate;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+
+
+
 }
