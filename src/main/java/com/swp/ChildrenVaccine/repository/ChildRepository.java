@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChildRepository extends JpaRepository<Child, String> {
+    List<Child> findAll();
     List<Child> findByCusId_CusId(String customerId); // Tự động query theo ID của Customer
     Optional<Child> findTopByOrderByChildId();
     List<Child> findByCusId(Customer customer);
     List<Child> getChildrenByCusId(Customer cusId);
+    Optional<Child> findTopByOrderByChildIdDesc();
 }

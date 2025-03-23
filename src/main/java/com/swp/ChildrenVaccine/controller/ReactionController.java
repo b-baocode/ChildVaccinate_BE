@@ -2,7 +2,8 @@ package com.swp.ChildrenVaccine.controller;
 
 
 import com.swp.ChildrenVaccine.dto.request.ReactionRequest;
-import com.swp.ChildrenVaccine.entities.Reaction;
+import com.swp.ChildrenVaccine.dto.response.VaccinationReactionDTO;
+import com.swp.ChildrenVaccine.entities.VaccinationReaction;
 import com.swp.ChildrenVaccine.service.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +19,32 @@ public class ReactionController {
     private ReactionService reactionService;
 
     @PostMapping
-    public ResponseEntity<Reaction> createReaction(@RequestBody ReactionRequest reactionRequest) {
-        Reaction savedReaction = reactionService.createReaction(reactionRequest);
+    public ResponseEntity<VaccinationReaction> createReaction(@RequestBody ReactionRequest reactionRequest) {
+        VaccinationReaction savedReaction = reactionService.createReaction(reactionRequest);
         return ResponseEntity.ok(savedReaction);
     }
 
     @GetMapping("/child/{childId}")
-    public ResponseEntity<List<Reaction>> getReactionsByChildId(@PathVariable String childId) {
-        List<Reaction> reactions = reactionService.getReactionsByChildId(childId);
+    public ResponseEntity<List<VaccinationReaction>> getReactionsByChildId(@PathVariable String childId) {
+        List<VaccinationReaction> reactions = reactionService.getReactionsByChildId(childId);
         return ResponseEntity.ok(reactions);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<VaccinationReactionDTO>> getAllReact() {
+        List<VaccinationReactionDTO> dtos = reactionService.getAllReactions()
+                .stream()
+                .map(reaction -> new VaccinationReactionDTO(
+                        reaction.getId(),
+                        reaction.getChild().getChildId(),
+                        reaction.getChild().getFullName(),
+                        reaction.getAppointment().getAppId(),
+                        reaction.getSymptoms(),
+                        reaction.getSeverity().name(),
+                        reaction.getReactionDate()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
 }

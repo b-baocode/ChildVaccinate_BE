@@ -4,12 +4,12 @@ import com.swp.ChildrenVaccine.dto.request.LoginRequest;
 import com.swp.ChildrenVaccine.dto.request.RegisterRequest;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.entities.RevokedToken;
+import com.swp.ChildrenVaccine.entities.Staff;
+import com.swp.ChildrenVaccine.entities.User;
 import com.swp.ChildrenVaccine.exception.EmailAlreadyExistsException;
 import com.swp.ChildrenVaccine.repository.RevokedTokenRepository;
 import com.swp.ChildrenVaccine.repository.UserRepository;
-import com.swp.ChildrenVaccine.service.AuthenticationService;
-import com.swp.ChildrenVaccine.service.CustomerService;
-import com.swp.ChildrenVaccine.service.TokenService;
+import com.swp.ChildrenVaccine.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.AccessLevel;
@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -37,6 +38,12 @@ public class AuthenticationAPI {
 
     @Autowired
     private final CustomerService customerService;
+    @Autowired
+    private OtpService otpService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private EmailService emailService;
 
 //    @Autowired
 //    private final StaffService staffService;
@@ -88,5 +95,61 @@ public class AuthenticationAPI {
         }
 
         return ResponseEntity.ok(customer);
+    }
+
+    @GetMapping("/staff/session-info")
+    public ResponseEntity<?> getStaffSessionInfo(HttpSession session) {
+        Staff staff = (Staff) session.getAttribute("loggedInStaff");
+
+        if (staff == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy thông tin staff trong session.");
+        }
+
+        return ResponseEntity.ok(staff);
+    }
+
+    @PostMapping("/request-otp")
+    public ResponseEntity<String> requestOtp(@RequestParam String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email không tồn tại!");
+        }
+
+        String otp = otpService.generateOtp();
+        otpService.saveOtp(email, otp);
+        emailService.sendOtpEmail(email, otp);
+
+        return ResponseEntity.ok("OTP đã được gửi đến email!");
+    }
+
+    @PostMapping("/validate-otp")
+    public ResponseEntity<String> validateOtp(@RequestParam String email, @RequestParam String otp) {
+        if (otpService.validateOtp(email, otp)) {
+            return ResponseEntity.ok("OTP hợp lệ, bạn có thể đặt lại mật khẩu.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("OTP không hợp lệ hoặc đã hết hạn.");
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestParam String email,
+                                                @RequestParam String otp,
+                                                @RequestParam String newPassword) {
+        if (!otpService.validateOtp(email, otp)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("OTP không hợp lệ hoặc đã hết hạn.");
+        }
+
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User existingUser = userOptional.get();
+
+            existingUser.setPassword(newPassword); // Không mã hóa mật khẩu
+
+            userService.saveNewUserPassword(existingUser);
+
+            return ResponseEntity.ok("Mật khẩu đã được đặt lại thành công!");
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email không tồn tại!");
     }
 }

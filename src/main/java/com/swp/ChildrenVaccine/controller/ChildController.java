@@ -24,10 +24,14 @@ public class ChildController {
     private ChildRepository childrenRepository;
 
     @GetMapping("/all")
-    ResponseEntity<?> getAllChildren() {
-        return ResponseEntity.ok(childrenRepository.findAll());
+    public ResponseEntity<List<ChildDTO>> getAllChildren() {
+        List<ChildDTO> children = childService.getAllChildren();
+        if (children.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(children);
     }
-
+    
     @PostMapping("/{cusId}/add")
     ResponseEntity<?> addChild(@PathVariable String cusId ,@RequestBody Child child) {
         try{
@@ -47,15 +51,6 @@ public class ChildController {
     Child getChildById(@PathVariable String id) {
         return childrenRepository.findById(id).orElse(null);
     }
-
-//    @GetMapping("/getByCusID/{cusID}")
-//    ResponseEntity<List<Child>> getChildrenByCustomerId(@PathVariable String customerId) {
-//        List<Child> children = childService.getChildrenByCustomerId(customerId);
-//        if (children.isEmpty()) {
-//            return ResponseEntity.noContent().build();
-//        }
-//        return ResponseEntity.ok(children);
-//    }
 
     @Autowired
     public ChildController(ChildService childService) {

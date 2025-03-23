@@ -4,7 +4,7 @@ package com.swp.ChildrenVaccine.service;
 import com.swp.ChildrenVaccine.dto.request.ReactionRequest;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Child;
-import com.swp.ChildrenVaccine.entities.Reaction;
+import com.swp.ChildrenVaccine.entities.VaccinationReaction;
 import com.swp.ChildrenVaccine.repository.AppointmentRepository;
 import com.swp.ChildrenVaccine.repository.ChildRepository;
 import com.swp.ChildrenVaccine.repository.ReactionRepository;
@@ -26,21 +26,29 @@ public class ReactionService {
     private AppointmentRepository appointmentRepository;
 
 
-    public List<Reaction> getReactionsByChildId(String childId) {
+    public List<VaccinationReaction> getReactionsByChildId(String childId) {
         return reactionRepository.findByChild_ChildId(childId);
     }
 
+    public List<VaccinationReaction> getAllReactions() {
+        return reactionRepository.findAll();
+    }
 
-    public Reaction createReaction(ReactionRequest reactionRequest) {
+    public VaccinationReaction createReaction(ReactionRequest reactionRequest) {
         Optional<Child> child = childRepository.findById(reactionRequest.getChildId());
-        Optional<Appointment> appointment = appointmentRepository.findById(reactionRequest.getAppointmentId());
+        Optional<Appointment> appointment = appointmentRepository.findByAppId(reactionRequest.getAppointmentId());
 
         if (child.isPresent() && appointment.isPresent()) {
-            Reaction reaction = new Reaction();
+            VaccinationReaction reaction = new VaccinationReaction();
 
             // Tạo ID cho reaction
-            String reactionId = "REAC" + System.currentTimeMillis();
-            reaction.setId(reactionId);
+            // Tạo reactionId mới
+            String lastId = reactionRepository.findMaxReactionId(); // Lấy ID lớn nhất hiện có
+            int newId = 1; // Mặc định là 1 nếu không có ID nào trước đó
+            if (lastId != null && lastId.matches("REAC\\d+")) {
+                newId = Integer.parseInt(lastId.replace("REAC", "")) + 1;
+            }
+            reaction.setId(String.format("REAC%03d", newId)); // Format thành REAC001, REAC002, ...
 
             reaction.setChild(child.get());
             reaction.setAppointment(appointment.get());

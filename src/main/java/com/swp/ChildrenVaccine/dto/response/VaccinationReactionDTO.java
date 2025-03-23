@@ -1,18 +1,20 @@
-package com.swp.ChildrenVaccine.dto.request;
+package com.swp.ChildrenVaccine.dto.response;
 
-import com.swp.ChildrenVaccine.enums.Severity;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
-@Data
-public class ReactionRequest {
+@AllArgsConstructor
+public class VaccinationReactionDTO {
+    private String id;
     private String childId;
+    private String childName;
     private String appointmentId;
     private String symptoms;
-    private Severity severity;
+    private String severity;
     private LocalDateTime reactionDate;
 }
+

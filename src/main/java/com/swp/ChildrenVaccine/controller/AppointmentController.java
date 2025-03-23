@@ -1,6 +1,9 @@
 package com.swp.ChildrenVaccine.controller;
 
 import com.swp.ChildrenVaccine.dto.response.AppointmentDTO;
+import com.swp.ChildrenVaccine.dto.response.AppointmentFeedbackDTO;
+import com.swp.ChildrenVaccine.dto.response.AppointmentSimpleDTO;
+import com.swp.ChildrenVaccine.dto.response.TimeSlotAvailabilityDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
 import com.swp.ChildrenVaccine.enums.AppStatus;
@@ -133,5 +136,41 @@ public class AppointmentController {
             errorResponse.put("error", "Internal server error");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
+    }
+
+    @GetMapping("/completed-without-feedback/{cusId}")
+    public ResponseEntity<List<AppointmentSimpleDTO>> getCompletedAppointmentsWithoutFeedback(@PathVariable String cusId) {
+        List<AppointmentSimpleDTO> appointments = appointmentService.getCompletedAppointmentsWithoutFeedback(cusId);
+        if (appointments.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(appointments);
+    }
+
+    @GetMapping("/byChild/{childId}")
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByChildId(@PathVariable String childId) {
+        List<AppointmentDTO> appointments = appointmentService.getAppointmentsByChildId(childId);
+        if (appointments.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(appointments);
+    }
+
+    @GetMapping("/byCustomer/{cusId}")
+    public ResponseEntity<List<Appointment>> getAppointmentsByCustomerId(@PathVariable String cusId) {
+        List<Appointment> appointments = appointmentService.getAppointmentsByCustomerId(cusId);
+        if (appointments.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(appointments);
+    }
+
+    @GetMapping("/availability")
+    public ResponseEntity<TimeSlotAvailabilityDTO> checkTimeSlotAvailability(@RequestParam String date, @RequestParam String timeSlot) {
+        TimeSlotAvailabilityDTO availability = appointmentService.checkTimeSlotAvailability(date, timeSlot);
+        if (!availability.isAvailable()) {
+            return ResponseEntity.status(409).body(availability); // 409 Conflict
+        }
+        return ResponseEntity.ok(availability);
     }
 }

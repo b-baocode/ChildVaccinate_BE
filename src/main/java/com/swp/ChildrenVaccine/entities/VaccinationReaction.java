@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "vaccination_reactions")
-public class Reaction {
+public class VaccinationReaction {
 
     @Id
     @Column(name = "reaction_id", length = 50)
@@ -28,7 +28,7 @@ public class Reaction {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "severity", nullable = false)
-    private Severity severity;
+    Severity severity;
 
     @Column(name = "reaction_date", nullable = false)
     private LocalDateTime reactionDate;
