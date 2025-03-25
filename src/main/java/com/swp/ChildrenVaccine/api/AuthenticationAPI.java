@@ -2,10 +2,7 @@ package com.swp.ChildrenVaccine.api;
 
 import com.swp.ChildrenVaccine.dto.request.LoginRequest;
 import com.swp.ChildrenVaccine.dto.request.RegisterRequest;
-import com.swp.ChildrenVaccine.entities.Customer;
-import com.swp.ChildrenVaccine.entities.RevokedToken;
-import com.swp.ChildrenVaccine.entities.Staff;
-import com.swp.ChildrenVaccine.entities.User;
+import com.swp.ChildrenVaccine.entities.*;
 import com.swp.ChildrenVaccine.exception.EmailAlreadyExistsException;
 import com.swp.ChildrenVaccine.repository.CustomerRepository;
 import com.swp.ChildrenVaccine.repository.RevokedTokenRepository;
@@ -59,6 +56,9 @@ public class AuthenticationAPI {
     @Autowired
     private final StaffRepository staffRepository;
 
+    @Autowired
+    private final AdminService adminService;
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpSession session) {
@@ -86,6 +86,17 @@ public class AuthenticationAPI {
             session.setAttribute("loggedInStaff", staff); // Lưu vào session
             return ResponseEntity.ok(response);
         }
+        //Admin
+        Admin admin = adminService.findByEmail(request.getEmail());
+        if (admin != null) {
+            if (!admin.getUser().isActive()) {
+                admin.getUser().setActive(true); // Cập nhật trạng thái active
+                userRepository.save(admin.getUser()); // Lưu vào database
+            }
+            session.setAttribute("loggedInAdmin", admin); // Lưu vào session
+            return ResponseEntity.ok(response);
+        }
+
         return ResponseEntity.ok(response);
     }
 
@@ -133,6 +144,17 @@ public class AuthenticationAPI {
             return ResponseEntity.ok("Đăng xuất thành công (Staff)!");
         }
 
+        Admin loggedInAdmin = (Admin) session.getAttribute("loggedInAdmin");
+        if (loggedInAdmin != null) {
+            User user = loggedInAdmin.getUser();
+            if (user != null) {
+                user.setActive(false); // Đặt trạng thái active thành false
+                userRepository.save(user);
+            }
+            session.removeAttribute("loggedInAdmin"); // Xóa session của Admin
+            return ResponseEntity.ok("Đăng xuất thành công (Admin)!");
+        }
+
         return ResponseEntity.badRequest().body("Không tìm thấy người dùng để đăng xuất.");
     }
 
@@ -156,6 +178,17 @@ public class AuthenticationAPI {
         }
 
         return ResponseEntity.ok(staff);
+    }
+
+    @GetMapping("/admin/session-info")
+    public ResponseEntity<?> getAdminSessionInfo(HttpSession session) {
+        Admin admin = (Admin) session.getAttribute("loggedInAdmin");
+
+        if (admin == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy thông tin admin trong session.");
+        }
+
+        return ResponseEntity.ok(admin);
     }
 
     @PostMapping("/request-otp")
