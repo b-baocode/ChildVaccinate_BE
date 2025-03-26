@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface VaccinePackageRepository extends JpaRepository<VacinePackage, Long>{
+public interface VaccinePackageRepository extends JpaRepository<VacinePackage, String>{
     List<VacinePackage> findAll();
     Optional<VacinePackage> findByPackageId(String id);
 }

@@ -1,5 +1,6 @@
 package com.swp.ChildrenVaccine.controller;
 
+import com.swp.ChildrenVaccine.dto.request.RescheduleAppointmentRequest;
 import com.swp.ChildrenVaccine.dto.response.AppointmentDTO;
 import com.swp.ChildrenVaccine.dto.response.AppointmentFeedbackDTO;
 import com.swp.ChildrenVaccine.dto.response.AppointmentSimpleDTO;
@@ -7,7 +8,9 @@ import com.swp.ChildrenVaccine.dto.response.TimeSlotAvailabilityDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.dto.request.appointment.AppointmentRegisterRequest;
 import com.swp.ChildrenVaccine.enums.AppStatus;
+import com.swp.ChildrenVaccine.enums.PaymentStatus;
 import com.swp.ChildrenVaccine.service.AppointmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,31 +52,46 @@ public class AppointmentController {
         }
     }
 
-    @PostMapping("/register-vaccination")
-    public ResponseEntity<Map<String, Object>> createAppointment(@RequestBody AppointmentRegisterRequest request) {
-        System.out.println("Received request: " + request);
-
-        if ((request.getVaccineId() != null && request.getPackageId() != null) ||
-                (request.getVaccineId() == null && request.getPackageId() == null)) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Chỉ được chọn một trong vaccineId hoặc packageId");
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
-
+    @GetMapping("/{appId}")
+    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable String appId) {
         try {
-            Appointment createdAppointment = appointmentService.createAppointment(request);
-            AppointmentDTO responseDTO = new AppointmentDTO(createdAppointment);
-
-            Map<String, Object> successResponse = new HashMap<>();
-            successResponse.put("message", "Appointment created successfully");
-            successResponse.put("appointment", responseDTO);
-            return ResponseEntity.ok(successResponse);
+            Appointment appointment = appointmentService.getAppointmentById(appId);
+            if (appointment == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            AppointmentDTO appointmentDTO = new AppointmentDTO(appointment);
+            return ResponseEntity.ok(appointmentDTO);
         } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            logger.error("Error retrieving appointment", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+//    @PostMapping("/register-vaccination")
+//    public ResponseEntity<Map<String, Object>> createAppointment(@RequestBody AppointmentRegisterRequest request) {
+//        System.out.println("Received request: " + request);
+//
+//        if ((request.getVaccineId() != null && request.getPackageId() != null) ||
+//                (request.getVaccineId() == null && request.getPackageId() == null)) {
+//            Map<String, Object> errorResponse = new HashMap<>();
+//            errorResponse.put("error", "Chỉ được chọn một trong vaccineId hoặc packageId");
+//            return ResponseEntity.badRequest().body(errorResponse);
+//        }
+//
+//        try {
+//            Appointment createdAppointment = appointmentService.createAppointment(request);
+//            AppointmentDTO responseDTO = new AppointmentDTO(createdAppointment);
+//
+//            Map<String, Object> successResponse = new HashMap<>();
+//            successResponse.put("message", "Appointment created successfully");
+//            successResponse.put("appointment", responseDTO);
+//            return ResponseEntity.ok(successResponse);
+//        } catch (Exception e) {
+//            Map<String, Object> errorResponse = new HashMap<>();
+//            errorResponse.put("error", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+//        }
+//    }
 
     @PutMapping("/update-status/{appId}")
     public ResponseEntity<Map<String, Object>> updateAppointmentStatus(
@@ -156,6 +174,15 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
+    @GetMapping("/latest-appointment/{childId}")
+    public ResponseEntity<AppointmentDTO> getLatestAppointmentByChildId(@PathVariable String childId) {
+        AppointmentDTO latestAppointment = appointmentService.getLatestAppointmentByChildId(childId);
+        if (latestAppointment == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(latestAppointment);
+    }
+
     @GetMapping("/byCustomer/{cusId}")
     public ResponseEntity<List<Appointment>> getAppointmentsByCustomerId(@PathVariable String cusId) {
         List<Appointment> appointments = appointmentService.getAppointmentsByCustomerId(cusId);
@@ -172,5 +199,45 @@ public class AppointmentController {
             return ResponseEntity.status(409).body(availability); // 409 Conflict
         }
         return ResponseEntity.ok(availability);
+    }
+
+    @GetMapping("/schedule/{scheduleId}")
+    public ResponseEntity<List<AppointmentDTO>> getAllAppointmentByScheduleId(@PathVariable String scheduleId) {
+        List<AppointmentDTO> appointments = appointmentService.getAllAppointmentByScheduleId(scheduleId);
+        return ResponseEntity.ok(appointments);
+    }
+
+    @PutMapping("/update-payment-status/{appId}")
+    public ResponseEntity<Map<String, Object>> updatePaymentStatus(@PathVariable String appId) {
+        try {
+            Appointment updatedAppointment = appointmentService.updatePaymentStatus(appId);
+            Map<String, Object> successResponse = new HashMap<>();
+            successResponse.put("message", "Payment status updated successfully");
+            successResponse.put("appointment", updatedAppointment);
+            return ResponseEntity.ok(successResponse);
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    @PutMapping("/reschedule-appointment/{appointmentId}")
+    public ResponseEntity<String> rescheduleAppointment(
+            @PathVariable String appointmentId,
+            @Valid @RequestBody RescheduleAppointmentRequest request) {
+
+        boolean updated = appointmentService.rescheduleAppointment(appointmentId, request);
+
+        if (updated) {
+            return ResponseEntity.ok("Lịch hẹn đã được cập nhật thành công!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Không thể cập nhật lịch hẹn. Vui lòng kiểm tra thông tin!");
+        }
     }
 }

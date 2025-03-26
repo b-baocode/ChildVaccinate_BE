@@ -13,23 +13,27 @@ public class AppointmentDTO {
     private String appId;
     private String customerId;
     private String childId;
-    private String serviceId; // Có thể là vaccineId hoặc packageId
+    private String scheduleId;
+    private String serviceName;
+    private int shotNumber;
     private LocalDate appointmentDate;
     private LocalTime appointmentTime;
     private String status;
     private String paymentStatus;
+    private String mailNotice;
 
     public AppointmentDTO(Appointment appointment) {
         this.appId = appointment.getAppId();
         this.customerId = appointment.getCustomer().getCusId();
         this.childId = appointment.getChild().getChildId();
-        this.serviceId = (appointment.getVaccineId() != null)
-                ? appointment.getVaccineId().getVaccineId()
-                : appointment.getPackageId().getPackageId();
+        this.scheduleId = appointment.getSchedule().getScheduleId();
+        this.serviceName = appointment.getVaccine().getName();
+        this.shotNumber = appointment.getShotNumber();
         this.appointmentDate = appointment.getAppointmentDate();
         this.appointmentTime = appointment.getAppointmentTime();
         this.status = appointment.getStatus().toString();
         this.paymentStatus = appointment.getPaymentStatus().toString();
+        this.mailNotice = appointment.getMailNotice().toString();
     }
 
     // Getters & Setters

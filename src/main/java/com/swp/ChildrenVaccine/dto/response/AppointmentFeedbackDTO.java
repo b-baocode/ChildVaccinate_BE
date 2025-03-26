@@ -14,6 +14,6 @@ public class AppointmentFeedbackDTO {
     private LocalDate appointmentDate;
     private LocalTime appointmentTime;
     private String childName;
-    private String vaccineOrPackageName;
+    private String vaccineName;
 }
 

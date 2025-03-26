@@ -34,36 +34,4 @@ public class CustomerController {
         return ResponseEntity.ok(firstCustomer);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Customer> getCustomer(@PathVariable Long id) {
-//        Customer customer = customerRepository.findById(id).orElse(null);
-//        if (customer == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(customer);
-//    }
-
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customerDetails) {
-//        Customer customer = customerRepository.findById(id).orElse(null);
-//        if (customer == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        customer.setEmail(customerDetails.getEmail());
-//        customer.setPassword(customerDetails.getPassword());
-//        customer.setFullName(customerDetails.getFullName());
-//        customer.setPhone(customerDetails.getPhone());
-//        customer.setAddress(customerDetails.getAddress());
-//        Customer updatedCustomer = customerRepository.save(customer);
-//        return ResponseEntity.ok(updatedCustomer);
-//    }
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
-//        Customer customer = customerRepository.findById(id).orElse(null);
-//        if (customer == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        customerRepository.delete(customer);
-//        return ResponseEntity.noContent().build();
-//    }
 }
