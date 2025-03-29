@@ -14,7 +14,7 @@ public class AppointmentSimpleDTO {
     private String cusName;
     private String childName;
     private LocalDate appointmentDate;
-    private String vaccineOrPackage;
+    private String vaccine;
 
     public AppointmentSimpleDTO(Appointment appointment) {
         this.appId = appointment.getAppId();
@@ -22,13 +22,7 @@ public class AppointmentSimpleDTO {
         this.cusName = appointment.getCustomer().getUser().getFullName();
         this.childName = appointment.getChild().getFullName();
         this.appointmentDate = appointment.getAppointmentDate();
+        this.vaccine = appointment.getVaccine().getName();
 
-        if (appointment.getVaccineId() != null) {
-            this.vaccineOrPackage = appointment.getVaccineId().getName();
-        } else if (appointment.getPackageId() != null) {
-            this.vaccineOrPackage = appointment.getPackageId().getName();
-        } else {
-            this.vaccineOrPackage = "N/A";
-        }
     }
 }

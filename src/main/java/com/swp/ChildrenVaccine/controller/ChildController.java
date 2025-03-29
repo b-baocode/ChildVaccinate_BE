@@ -42,11 +42,6 @@ public class ChildController {
         }
     }
 
-//    @GetMapping("")
-//    List<Child> getListOfChildren() {
-//        return childrenRepository.findAll();
-//    }
-
     @GetMapping("/{id}")
     Child getChildById(@PathVariable String id) {
         return childrenRepository.findById(id).orElse(null);

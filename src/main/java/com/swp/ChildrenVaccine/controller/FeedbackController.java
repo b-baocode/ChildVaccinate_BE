@@ -33,4 +33,16 @@ public class FeedbackController {
         List<FeedbackDTO> feedbackList = feedbackService.getAllFeedback();
         return ResponseEntity.ok(feedbackList);
     }
+
+    @GetMapping("/getByAppId/{appId}")
+    public ResponseEntity<List<FeedbackDTO>> getFeedbackByAppId(@PathVariable String appId) {
+        List<FeedbackDTO> feedbackList = feedbackService.getFeedbackByAppId(appId);
+        return ResponseEntity.ok(feedbackList);
+    }
+
+    @GetMapping("/getByCusId/{cusId}")
+    public ResponseEntity<List<FeedbackDTO>> getFeedbackByCusId(@PathVariable String cusId) {
+        List<FeedbackDTO> feedbackList = feedbackService.getFeedbackByCusId(cusId);
+        return ResponseEntity.ok(feedbackList);
+    }
 }

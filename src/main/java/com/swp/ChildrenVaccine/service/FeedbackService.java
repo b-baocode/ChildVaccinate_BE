@@ -90,4 +90,14 @@ public class FeedbackService {
         dto.setAppointmentDate(feedback.getAppointment().getAppointmentDate().toString()); // Optional: Include appointment date
         return dto;
     }
+
+    public List<FeedbackDTO> getFeedbackByAppId(String appId) {
+        List<RatingFeedback> feedbackList = feedbackRepository.findByAppId(appId);
+        return feedbackList.stream().map(FeedbackDTO::new).collect(Collectors.toList());
+    }
+
+    public List<FeedbackDTO> getFeedbackByCusId(String cusId) {
+        List<RatingFeedback> feedbackList = feedbackRepository.findByCusId(cusId);
+        return feedbackList.stream().map(FeedbackDTO::new).collect(Collectors.toList());
+    }
 }

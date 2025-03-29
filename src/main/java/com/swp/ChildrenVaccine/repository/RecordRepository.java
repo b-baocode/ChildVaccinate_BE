@@ -1,5 +1,6 @@
 package com.swp.ChildrenVaccine.repository;
 
+import com.swp.ChildrenVaccine.dto.response.VaccinationRecordDTO;
 import com.swp.ChildrenVaccine.entities.VaccinationRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +16,7 @@ public interface RecordRepository extends JpaRepository<VaccinationRecord, Strin
 
     @Query("SELECT MAX(r.id) FROM VaccinationRecord r WHERE r.id LIKE 'VR%'")
     String findMaxRecordId();
+
+    @Query("SELECT r FROM VaccinationRecord r WHERE r.appointment.appId = :appId")
+    List<VaccinationRecord> findByAppId(@Param("appId") String appId);
 }

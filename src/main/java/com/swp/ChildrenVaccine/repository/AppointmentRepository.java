@@ -3,6 +3,7 @@ package com.swp.ChildrenVaccine.repository;
 import com.swp.ChildrenVaccine.dto.response.AppointmentFeedbackDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Customer;
+import com.swp.ChildrenVaccine.entities.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
+public interface AppointmentRepository extends JpaRepository<Appointment, String> {
 
     //Lấy danh sách tất cả lịch hẹn
     List<Appointment> findAll();
@@ -38,4 +39,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query(value = "SELECT COUNT(*) FROM appointments WHERE appointment_date = :date AND CAST(appointment_time AS TIME) = CAST(:timeSlot AS TIME)", nativeQuery = true)
     int countByDateAndTimeSlot(@Param("date") LocalDate date, @Param("timeSlot") String timeSlot);
 
+    @Query("SELECT a FROM Appointment a WHERE a.schedule.scheduleId = :scheduleId")
+    List<Appointment> findByScheduleId(@Param("scheduleId") String scheduleId);
+
+    List<Appointment> findBySchedule(Schedule schedule);
+
+    @Query("SELECT a FROM Appointment a WHERE a.customer.user.phone = :phoneNumber")
+    List<Appointment> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 }

@@ -2,12 +2,11 @@ package com.swp.ChildrenVaccine.api;
 
 import com.swp.ChildrenVaccine.dto.request.LoginRequest;
 import com.swp.ChildrenVaccine.dto.request.RegisterRequest;
-import com.swp.ChildrenVaccine.entities.Customer;
-import com.swp.ChildrenVaccine.entities.RevokedToken;
-import com.swp.ChildrenVaccine.entities.Staff;
-import com.swp.ChildrenVaccine.entities.User;
+import com.swp.ChildrenVaccine.entities.*;
 import com.swp.ChildrenVaccine.exception.EmailAlreadyExistsException;
+import com.swp.ChildrenVaccine.repository.CustomerRepository;
 import com.swp.ChildrenVaccine.repository.RevokedTokenRepository;
+import com.swp.ChildrenVaccine.repository.StaffRepository;
 import com.swp.ChildrenVaccine.repository.UserRepository;
 import com.swp.ChildrenVaccine.service.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,15 +37,28 @@ public class AuthenticationAPI {
 
     @Autowired
     private final CustomerService customerService;
-    @Autowired
-    private OtpService otpService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private EmailService emailService;
 
-//    @Autowired
-//    private final StaffService staffService;
+    @Autowired
+    private final StaffService staffService;
+
+    @Autowired
+    private final UserService userService;
+
+    @Autowired
+    private final OtpService otpService;
+
+    @Autowired
+    private final EmailService emailService;
+
+    @Autowired
+    private final CustomerRepository customerRepository;
+
+    @Autowired
+    private final StaffRepository staffRepository;
+
+    @Autowired
+    private final AdminService adminService;
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpSession session) {
@@ -56,10 +68,34 @@ public class AuthenticationAPI {
 
         // Extract email from request and store it in session
         if (customer != null) {
-            // Lưu toàn bộ thông tin Customer vào session
-            session.setAttribute("loggedInCustomer", customer);
+            if (!customer.getUser().isActive()) {
+                customer.getUser().setActive(true); // Cập nhật trạng thái active
+                customerRepository.save(customer); // Lưu vào database
+            }
+            session.setAttribute("loggedInCustomer", customer); // Lưu vào session
+            return ResponseEntity.ok(response);
         }
 
+        // Kiểm tra nếu user là Staff
+        Staff staff = staffService.findByEmail(request.getEmail());
+        if (staff != null) {
+            if (!staff.getUser().isActive()) {
+                staff.getUser().setActive(true); // Cập nhật trạng thái active
+                staffRepository.save(staff); // Lưu vào database
+            }
+            session.setAttribute("loggedInStaff", staff); // Lưu vào session
+            return ResponseEntity.ok(response);
+        }
+        //Admin
+        Admin admin = adminService.findByEmail(request.getEmail());
+        if (admin != null) {
+            if (!admin.getUser().isActive()) {
+                admin.getUser().setActive(true); // Cập nhật trạng thái active
+                userRepository.save(admin.getUser()); // Lưu vào database
+            }
+            session.setAttribute("loggedInAdmin", admin); // Lưu vào session
+            return ResponseEntity.ok(response);
+        }
 
         return ResponseEntity.ok(response);
     }
@@ -75,6 +111,7 @@ public class AuthenticationAPI {
     }
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpSession session) {
+        // Lấy token từ request
         String token = tokenService.extractToken(request);
         if (token != null) {
             RevokedToken revokedToken = new RevokedToken();
@@ -82,11 +119,46 @@ public class AuthenticationAPI {
             revokedToken.setRevokedAt(LocalDateTime.now());
             revokedTokenRepository.save(revokedToken);
         }
-        session.invalidate();
-        return ResponseEntity.ok("Đăng xuất thành công!");
+
+        // Kiểm tra session của Customer
+        Customer loggedInCustomer = (Customer) session.getAttribute("loggedInCustomer");
+        if (loggedInCustomer != null) {
+            User user = loggedInCustomer.getUser();
+            if (user != null) {
+                user.setActive(false); // Đặt trạng thái active thành false
+                userRepository.save(user);
+            }
+            session.removeAttribute("loggedInCustomer"); // Xóa session của Customer
+            return ResponseEntity.ok("Đăng xuất thành công (Customer)!");
+        }
+
+        // Kiểm tra session của Staff
+        Staff loggedInStaff = (Staff) session.getAttribute("loggedInStaff");
+        if (loggedInStaff != null) {
+            User user = loggedInStaff.getUser();
+            if (user != null) {
+                user.setActive(false); // Đặt trạng thái active thành false
+                userRepository.save(user);
+            }
+            session.removeAttribute("loggedInStaff"); // Xóa session của Staff
+            return ResponseEntity.ok("Đăng xuất thành công (Staff)!");
+        }
+
+        Admin loggedInAdmin = (Admin) session.getAttribute("loggedInAdmin");
+        if (loggedInAdmin != null) {
+            User user = loggedInAdmin.getUser();
+            if (user != null) {
+                user.setActive(false); // Đặt trạng thái active thành false
+                userRepository.save(user);
+            }
+            session.removeAttribute("loggedInAdmin"); // Xóa session của Admin
+            return ResponseEntity.ok("Đăng xuất thành công (Admin)!");
+        }
+
+        return ResponseEntity.badRequest().body("Không tìm thấy người dùng để đăng xuất.");
     }
 
-    @GetMapping("/session-info")
+    @GetMapping("/customer/session-info")
     public ResponseEntity<?> getSessionInfo(HttpSession session) {
         Customer customer = (Customer) session.getAttribute("loggedInCustomer");
 
@@ -106,6 +178,17 @@ public class AuthenticationAPI {
         }
 
         return ResponseEntity.ok(staff);
+    }
+
+    @GetMapping("/admin/session-info")
+    public ResponseEntity<?> getAdminSessionInfo(HttpSession session) {
+        Admin admin = (Admin) session.getAttribute("loggedInAdmin");
+
+        if (admin == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy thông tin admin trong session.");
+        }
+
+        return ResponseEntity.ok(admin);
     }
 
     @PostMapping("/request-otp")
@@ -152,4 +235,5 @@ public class AuthenticationAPI {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email không tồn tại!");
     }
+
 }

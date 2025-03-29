@@ -12,25 +12,34 @@ import java.time.LocalTime;
 public class AppointmentDTO {
     private String appId;
     private String customerId;
+    private String customerName;
     private String childId;
-    private String serviceId; // Có thể là vaccineId hoặc packageId
+    private String childName;
+    private String scheduleId;
+    private String serviceName;
+    private int shotNumber;
     private LocalDate appointmentDate;
     private LocalTime appointmentTime;
     private String status;
     private String paymentStatus;
+    private String mailNotice;
+    private String phoneNumber;
 
     public AppointmentDTO(Appointment appointment) {
         this.appId = appointment.getAppId();
         this.customerId = appointment.getCustomer().getCusId();
+        this.customerName = appointment.getCustomer().getUser().getFullName();
         this.childId = appointment.getChild().getChildId();
-        this.serviceId = (appointment.getVaccineId() != null)
-                ? appointment.getVaccineId().getVaccineId()
-                : appointment.getPackageId().getPackageId();
+        this.childName = appointment.getChild().getFullName();
+        this.scheduleId = appointment.getSchedule().getScheduleId();
+        this.serviceName = appointment.getVaccine().getName();
+        this.shotNumber = appointment.getShotNumber();
         this.appointmentDate = appointment.getAppointmentDate();
         this.appointmentTime = appointment.getAppointmentTime();
         this.status = appointment.getStatus().toString();
         this.paymentStatus = appointment.getPaymentStatus().toString();
+        this.mailNotice = appointment.getMailNotice().toString();
+        this.phoneNumber = appointment.getCustomer().getUser().getPhone();
     }
 
-    // Getters & Setters
 }

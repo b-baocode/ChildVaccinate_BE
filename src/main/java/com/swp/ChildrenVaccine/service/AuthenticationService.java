@@ -65,11 +65,11 @@ public class AuthenticationService {
     private String getRedirectUrl(RoleEnum role) {
         switch (role) {
             case CUSTOMER:
-                return "/customer/home";
+                return "/home";
             case STAFF:
-                return "/staff/home";
+                return "/staff/schedule-info";
             case ADMIN:
-                return "/admin/home";
+                return "/admin";
             default:
                 throw new IllegalArgumentException("Vai trò không hợp lệ");
         }
