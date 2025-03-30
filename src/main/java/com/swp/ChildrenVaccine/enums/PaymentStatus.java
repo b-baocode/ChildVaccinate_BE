@@ -1,7 +1,7 @@
 package com.swp.ChildrenVaccine.enums;
 
-public enum PaymentStatus {
+public enum PaymentStatus
+{
     PENDING,
-    PAID,
-    FAIL
+    PAID
 }

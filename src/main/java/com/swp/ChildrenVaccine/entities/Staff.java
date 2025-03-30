@@ -5,18 +5,18 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@Entity
 @Getter
 @Setter
+@Entity
 @Table(name = "staff")
 public class Staff {
 
     @Id
     @Column(name = "staff_id", length = 50)
-    private String staffId;
+    private String id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     @Column(name = "department", length = 255)

@@ -17,16 +17,13 @@ public class AppointmentController {
     private AppointmentService appointmentService;
 
 
-    @PostMapping("/send-appointment-email/{appointmentId}")
-    public ResponseEntity<String> sendAppointmentEmail(@PathVariable String appointmentId) {
-        String message = appointmentService.sendAppointmentEmail(appointmentId);
-
-        if (message.contains("đã gửi email trước đó")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-        } else if (message.contains("Không tìm thấy")) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
-        } else {
-            return ResponseEntity.ok(message);
+    @PostMapping("/send-reminder-emails/{cusId}")
+    public ResponseEntity<String> sendReminderEmailsForUpcomingAppointments(@PathVariable String cusId) {
+        try {
+            appointmentService.sendReminderEmailsForUpcomingAppointments(cusId);
+            return ResponseEntity.ok("Reminder emails sent successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send reminder emails.");
         }
     }
 

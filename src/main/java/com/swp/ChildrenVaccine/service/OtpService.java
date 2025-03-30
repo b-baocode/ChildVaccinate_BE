@@ -31,6 +31,7 @@ public class OtpService {
             OtpToken otpToken = existingToken.get();
             otpToken.setOtp(otp);
             otpToken.setExpiryTime(LocalDateTime.now().plusMinutes(5));
+            System.out.println("Expiry Time: " + LocalDateTime.now().plusMinutes(5));
             otpTokenRepository.save(otpToken);
         } else {
             // Nếu email chưa tồn tại, tạo otp mới

@@ -4,7 +4,7 @@ import com.swp.ChildrenVaccine.dto.request.LoginRequest;
 import com.swp.ChildrenVaccine.dto.request.RegisterRequest;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.entities.User;
-import com.swp.ChildrenVaccine.enums.GenderEnum;
+import com.swp.ChildrenVaccine.enums.Gender;
 import com.swp.ChildrenVaccine.enums.RoleEnum;
 import com.swp.ChildrenVaccine.exception.EmailAlreadyExistsException;
 import com.swp.ChildrenVaccine.repository.CustomerRepository;
@@ -65,11 +65,11 @@ public class AuthenticationService {
     private String getRedirectUrl(RoleEnum role) {
         switch (role) {
             case CUSTOMER:
-                return "/customer/home";
+                return "/home";
             case STAFF:
-                return "/staff/home";
+                return "/staff/schedule-info";
             case ADMIN:
-                return "/admin/home";
+                return "/admin";
             default:
                 throw new IllegalArgumentException("Vai trò không hợp lệ");
         }
@@ -87,7 +87,7 @@ public class AuthenticationService {
         user.setId(userId);
         user.setEmail(request.getEmail());
         user.setFullName(request.getFullName());
-        user.setPassword(request.getPassword());
+        user.setPassword(request.getPassword()); // Mã hóa mật khẩu
         user.setPhone(request.getPhone());
         user.setRole(RoleEnum.CUSTOMER); // Mặc định là CUSTOMER
         user.setActive(true);
@@ -97,7 +97,7 @@ public class AuthenticationService {
         customer.setUser(user);
         customer.setAddress(request.getAddress());
         customer.setDateOfBirth(request.getDateOfBirth());
-        customer.setGender(GenderEnum.valueOf(request.getGender()));
+        customer.setGender(Gender.valueOf(request.getGender()));
 
         userRepository.save(user);
         customerRepository.save(customer);

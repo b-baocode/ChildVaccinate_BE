@@ -5,6 +5,7 @@ import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.entities.User;
 import com.swp.ChildrenVaccine.enums.AppStatus;
+import com.swp.ChildrenVaccine.enums.MailNoticeStatus;
 import com.swp.ChildrenVaccine.repository.AppointmentRepository;
 import com.swp.ChildrenVaccine.repository.ChildRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentService {
@@ -62,45 +64,45 @@ public class AppointmentService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy cuộc hẹn với ID: " + appId));
     }
 
-    public String sendAppointmentEmail(String appointmentId) {
-        Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
+    public void sendReminderEmailsForUpcomingAppointments(String cusId) {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        List<Appointment> appointments = appointmentRepository.findByCustomerId(cusId);
+        List<Appointment> upcomingAppointments = appointments.stream()
+                .filter(a -> a.getAppointmentDate().isEqual(tomorrow) && a.getStatus() == AppStatus.CONFIRMED)
+                .collect(Collectors.toList());
 
-        if (optionalAppointment.isPresent()) {
-            Appointment appointment = optionalAppointment.get();
+        for (Appointment appointment : upcomingAppointments) {
+            sendAppointmentEmail(appointment);
+        }
+    }
 
-            // Kiểm tra nếu email đã gửi trước đó
-            if (appointment.isEmailSent()) {
-                return "Cuộc hẹn " + appointmentId + " đã gửi email trước đó, không gửi lại.";
-            }
-
-            Customer customer = appointment.getCustomerId();
-            User user = customer.getUser();
-
-            String email = user.getEmail();
-            String subject = "Xác nhận cuộc hẹn tại phòng khám VNVC";
-
-            String body = "<h3>Xin chào " + user.getFullName() + ",</h3>"
-                    + "<p>Bạn có một cuộc hẹn được xác nhận với thông tin sau:</p>"
-                    + "<ul>"
-                    + "<li><b>Tên Trẻ:</b> " + appointment.getChildId().getFullName() + "</li>"
-                    + "<li><b>Ngày hẹn:</b> " + appointment.getAppointmentDate() + "</li>"
-                    + "<li><b>Giờ hẹn:</b> " + appointment.getAppointmentTime() + "</li>"
-                    + (appointment.getVaccineId() != null ? "<li><b>Vaccine:</b> " + appointment.getVaccineId().getName() + "</li>" : "")
-                    + (appointment.getPackageId() != null ? "<li><b>Gói Vaccine:</b> " + appointment.getPackageId().getName() + "</li>" : "")
-                    + "</ul>"
-                    + "<p>Vui lòng đến đúng giờ!</p>"
-                    + "<br><p>Trân trọng,<br>Phòng khám VNVC</p>";
-
-            emailService.sendAppointmentNotification(email, subject, body);
-
-            // Cập nhật trạng thái đã gửi email
-            appointment.setEmailSent(true);
-            appointmentRepository.save(appointment);
-
-            return "Email xác nhận cuộc hẹn " + appointmentId + " đã được gửi thành công.";
+    public String sendAppointmentEmail(Appointment appointment) {
+        if (appointment.getMailNotice() == MailNoticeStatus.SENDED) {
+            return "Appointment " + appointment.getAppId() + " email already sent.";
         }
 
-        return "Không tìm thấy cuộc hẹn với ID: " + appointmentId;
+        Customer customer = appointment.getCustomer();
+        User user = customer.getUser();
+        String email = user.getEmail();
+        String subject = "Appointment Reminder at VNVC Clinic";
+
+        String body = "<h3>Hello " + user.getFullName() + ",</h3>"
+                + "<p>You have a confirmed appointment with the following details:</p>"
+                + "<ul>"
+                + "<li><b>Child Name:</b> " + appointment.getChild().getFullName() + "</li>"
+                + "<li><b>Appointment Date:</b> " + appointment.getAppointmentDate() + "</li>"
+                + "<li><b>Appointment Time:</b> " + appointment.getAppointmentTime() + "</li>"
+                + (appointment.getVaccine() != null ? "<li><b>Vaccine:</b> " + appointment.getVaccine().getName() + "</li>" : "")
+                + "</ul>"
+                + "<p>Please arrive on time!</p>"
+                + "<br><p>Regards,<br>VNVC Clinic</p>";
+
+        emailService.sendAppointmentNotification(email, subject, body);
+
+        appointment.setMailNotice(MailNoticeStatus.SENDED);
+        appointmentRepository.save(appointment);
+
+        return "Appointment " + appointment.getAppId() + " email sent successfully.";
     }
 
     public void checkAndCancelExpiredAppointments() {
@@ -116,14 +118,14 @@ public class AppointmentService {
             appointmentRepository.save(appointment);
 
             // Gửi email thông báo hủy cuộc hẹn
-            Customer customer = appointment.getCustomerId();
+            Customer customer = appointment.getCustomer();
             User user = customer.getUser();
             String email = user.getEmail();
             String subject = "Thông báo hủy cuộc hẹn tại VNVC";
             String body = "<h3>Xin chào " + user.getFullName() + ",</h3>"
                     + "<p>Cuộc hẹn của bạn đã bị hủy do quá hạn:</p>"
                     + "<ul>"
-                    + "<li><b>Tên Trẻ:</b> " + appointment.getChildId().getFullName() + "</li>"
+                    + "<li><b>Tên Trẻ:</b> " + appointment.getChild().getFullName() + "</li>"
                     + "<li><b>Ngày hẹn:</b> " + appointment.getAppointmentDate() + "</li>"
                     + "<li><b>Giờ hẹn:</b> " + appointment.getAppointmentTime() + "</li>"
                     + "</ul>"

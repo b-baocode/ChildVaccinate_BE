@@ -1,6 +1,6 @@
 package com.swp.ChildrenVaccine.entities;
 
-import com.swp.ChildrenVaccine.enums.GenderEnum;
+import com.swp.ChildrenVaccine.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +18,7 @@ public class Child {
 
     @ManyToOne
     @JoinColumn(name = "cus_id", nullable = false)
-    private Customer customer;
+    private Customer cusId;
 
     @Column(name = "full_name", length = 255, nullable = false)
     private String fullName;
@@ -26,9 +26,9 @@ public class Child {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "gender", length = 10)
-    private GenderEnum gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @Column(name = "height")
     private Float height;

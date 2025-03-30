@@ -1,6 +1,6 @@
 package com.swp.ChildrenVaccine.entities;
 
-import com.swp.ChildrenVaccine.enums.GenderEnum;
+import com.swp.ChildrenVaccine.enums.Gender;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class Customer {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user; // Use object reference instead of storing just userId
+    private User user;
 
     @Column(name = "address", length = 255)
     private String address;
@@ -31,5 +31,5 @@ public class Customer {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", length = 10)
-    private GenderEnum gender;
+    private Gender gender;
 }

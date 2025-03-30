@@ -2,6 +2,7 @@ package com.swp.ChildrenVaccine.service;
 
 import com.swp.ChildrenVaccine.config.VNPayConfig;
 import com.swp.ChildrenVaccine.entities.Appointment;
+import com.swp.ChildrenVaccine.entities.Schedule;
 import com.swp.ChildrenVaccine.entities.Vaccine;
 import com.swp.ChildrenVaccine.entities.VacinePackage;
 import com.swp.ChildrenVaccine.enums.AppStatus;
@@ -45,86 +46,241 @@ public class VNPayService {
 
     private VNPayConfig vnPayConfig;
 
-    public String createPayment(Appointment appointment, HttpServletRequest request, String urlReturn) {
+    // public String createPayment(Appointment appointment, HttpServletRequest
+    // request, String urlReturn) {
+    // String vnp_Version = "2.1.0";
+    // String vnp_Command = "pay";
+    // String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
+    // String vnp_IpAddr = VNPayConfig.getIpAddress(request);
+    // String vnp_TmnCode = vnPayConfig.getVnp_TmnCode();
+    // String orderType = "order-type";
+    //
+    // BigDecimal amount =
+    // calculateAmount(appointment).multiply(BigDecimal.valueOf(100));
+    // amount = amount.setScale(0, RoundingMode.HALF_UP);
+    // Map<String, String> vnp_Params = new HashMap<>();
+    // vnp_Params.put("vnp_Version", vnp_Version);
+    // vnp_Params.put("vnp_Command", vnp_Command);
+    // vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+    // vnp_Params.put("vnp_Amount", String.valueOf(amount));
+    // vnp_Params.put("vnp_CurrCode", "VND");
+    //
+    // vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+    // vnp_Params.put("vnp_OrderInfo", appointment.getAppId());
+    // vnp_Params.put("vnp_OrderType", orderType);
+    //
+    // String locate = "vn";
+    // vnp_Params.put("vnp_Locale", locate);
+    //
+    // urlReturn += vnPayConfig.getVnp_ReturnUrl();
+    // vnp_Params.put("vnp_ReturnUrl", urlReturn);
+    //
+    // vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+    //
+    // Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+    // SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+    // String vnp_CreateDate = formatter.format(cld.getTime());
+    // vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+    //
+    // cld.add(Calendar.MINUTE, 15);
+    // String vnp_ExpireDate = formatter.format(cld.getTime());
+    // vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+    //
+    // List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
+    // Collections.sort(fieldNames);
+    // StringBuilder hashData = new StringBuilder();
+    // StringBuilder query = new StringBuilder();
+    // Iterator<String> itr = fieldNames.iterator();
+    //
+    // while (itr.hasNext()) {
+    // String fieldName = itr.next();
+    // String fieldValue = vnp_Params.get(fieldName);
+    //
+    // if (fieldValue != null && !fieldValue.isEmpty()) {
+    // try {
+    // hashData.append(fieldName).append('=')
+    // .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+    //
+    // query.append(URLEncoder.encode(fieldName,
+    // StandardCharsets.US_ASCII.toString()))
+    // .append('=')
+    // .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+    //
+    // } catch (UnsupportedEncodingException e) {
+    // e.printStackTrace();
+    // }
+    //
+    // if (itr.hasNext()) {
+    // query.append('&');
+    // hashData.append('&');
+    // }
+    // }
+    // }
+    //
+    // String salt = vnPayConfig.getVnp_HashSecret();
+    // String vnp_SecureHash = VNPayConfig.hmacSHA512(salt, hashData.toString());
+    // query.append("&vnp_SecureHash=").append(vnp_SecureHash);
+    //
+    // String paymentUrl = vnPayConfig.getVnp_PayUrl() + "?" + query.toString();
+    // System.out.println("Payment URL: " + paymentUrl);
+    // return paymentUrl;
+    // }
+    //
+    // private BigDecimal calculateAmount(Appointment appointment) {
+    // if (appointment.getVaccine() != null) {
+    // Vaccine vaccine =
+    // vaccineRepository.findByVaccineId(appointment.getVaccine().getVaccineId())
+    // .orElseThrow(() -> new RuntimeException("Vaccine not found"));
+    // return vaccine.getPrice();
+    // }
+    // throw new RuntimeException("No vaccine or package selected");
+    // }
+
+    public String createPayment(Schedule schedule, boolean payFull, String appointmentId, HttpServletRequest request,
+                                String urlReturn) {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
         String vnp_IpAddr = VNPayConfig.getIpAddress(request);
         String vnp_TmnCode = vnPayConfig.getVnp_TmnCode();
         String orderType = "order-type";
-        //tìm giá của vaccine và gói vaccine và parse và * 100 theo yêu cầu của vnPay
-        BigDecimal amount = calculateAmount(appointment).multiply(BigDecimal.valueOf(100));
+        String orderInfo = schedule.getScheduleId();
+        if (appointmentId != null) {
+            orderInfo += "|APP:" + appointmentId; // Thêm appointmentId vào OrderInfo
+        }
+
+        BigDecimal amount;
+        if (payFull) {
+            amount = calculateAmountForSchedule(schedule).multiply(BigDecimal.valueOf(100));
+        } else {
+            if (appointmentId == null || appointmentId.isEmpty()) {
+                throw new RuntimeException("Appointment ID is required when payFull is false");
+            }
+
+            Appointment appointment = appointmentRepository.findById(appointmentId)
+                    .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+            if (!appointment.getSchedule().equals(schedule)) {
+                throw new RuntimeException("Appointment does not belong to the given schedule");
+            }
+
+            amount = calculateAmountForAppointment(appointment).multiply(BigDecimal.valueOf(100));
+        }
         amount = amount.setScale(0, RoundingMode.HALF_UP);
-        //tạo param gửi đến vnPAy
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
+
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", appointment.getAppId());
+        vnp_Params.put("vnp_OrderInfo", orderInfo);
         vnp_Params.put("vnp_OrderType", orderType);
+
         String locate = "vn";
         vnp_Params.put("vnp_Locale", locate);
-        urlReturn += vnPayConfig.getVnp_ReturnUrl();
-        vnp_Params.put("vnp_ReturnUrl", urlReturn);
+
+        // Thêm payFull vào returnUrl dưới dạng query parameter
+        String returnUrlWithParams = urlReturn + vnPayConfig.getVnp_ReturnUrl();
+        try {
+            // Thêm payFull vào returnUrl
+            returnUrlWithParams += "?payFull="
+                    + URLEncoder.encode(String.valueOf(payFull), StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error encoding returnUrl with payFull parameter", e);
+        }
+        vnp_Params.put("vnp_ReturnUrl", returnUrlWithParams);
+
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+
         cld.add(Calendar.MINUTE, 15);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
         Iterator<String> itr = fieldNames.iterator();
+
         while (itr.hasNext()) {
             String fieldName = itr.next();
             String fieldValue = vnp_Params.get(fieldName);
+
             if (fieldValue != null && !fieldValue.isEmpty()) {
                 try {
                     hashData.append(fieldName).append('=')
                             .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+
                     query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()))
                             .append('=')
                             .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
+
                 if (itr.hasNext()) {
                     query.append('&');
                     hashData.append('&');
                 }
             }
         }
+
         String salt = vnPayConfig.getVnp_HashSecret();
         String vnp_SecureHash = VNPayConfig.hmacSHA512(salt, hashData.toString());
         query.append("&vnp_SecureHash=").append(vnp_SecureHash);
+
         String paymentUrl = vnPayConfig.getVnp_PayUrl() + "?" + query.toString();
         System.out.println("Payment URL: " + paymentUrl);
         return paymentUrl;
     }
 
-    private BigDecimal calculateAmount(Appointment appointment) {
-        if (appointment.getVaccineId() != null) {
-            Vaccine vaccine = vaccineRepository.findById(appointment.getVaccineId().getVaccineId())
+    private BigDecimal calculateAmountForAppointment(Appointment appointment) {
+        if (appointment.getVaccine() != null) {
+            Vaccine vaccine = vaccineRepository.findByVaccineId(appointment.getVaccine().getVaccineId())
                     .orElseThrow(() -> new RuntimeException("Vaccine not found"));
             return vaccine.getPrice();
-        } else if (appointment.getPackageId() != null) {
-            VacinePackage vacinePackage = vacinePackageRepository.findById(appointment.getPackageId().getPackageId())
-                    .orElseThrow(() -> new RuntimeException("Package not found"));
-            return vacinePackage.getPrice();
         }
-        throw new RuntimeException("No vaccine or package selected");
+        throw new RuntimeException("No vaccine selected for this appointment");
+    }
+
+    public BigDecimal calculateAmountForSchedule(Schedule schedule) {
+        // Lọc danh sách các appointment có trạng thái "PENDING"
+        List<Appointment> pendingAppointments = appointmentRepository.findBySchedule(schedule).stream()
+                .filter(a -> a.getPaymentStatus() == PaymentStatus.PENDING)
+                .collect(Collectors.toList());
+
+        if (pendingAppointments.isEmpty()) {
+            return BigDecimal.ZERO; // Nếu không có appointment nào cần thanh toán, trả về 0
+        }
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
+        for (Appointment appointment : pendingAppointments) {
+            if (appointment.getVaccine() != null) {
+                // Lấy vaccine từ vaccineId trong appointment
+                Vaccine vaccine = vaccineRepository.findByVaccineId(appointment.getVaccine().getVaccineId())
+                        .orElseThrow(() -> new RuntimeException("Vaccine not found"));
+
+                // Cộng dồn giá vaccine vào tổng tiền ( theo số mũi tiêm của appointment đó)
+                totalAmount = totalAmount.add(vaccine.getPrice());
+            }
+        }
+
+        return totalAmount;
     }
 
     public void processPaymentResponse(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> fields = new HashMap<>();
-        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
             String fieldName = null;
             String fieldValue = null;
             try {
@@ -144,21 +300,16 @@ public class VNPayService {
         if (fields.containsKey("vnp_SecureHash")) {
             fields.remove("vnp_SecureHash");
         }
-        String signValue = vnPayConfig.hashAllFields(fields);
+
         try {
-            if (signValue.equals(vnp_SecureHash)) {
-                if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                    response.sendRedirect("/success");
-                } else {
-                    response.sendRedirect("/failed");
-                }
+            String baseUrl = "http://localhost:3000";
+            if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
+                response.sendRedirect(baseUrl + "/success");
             } else {
-                response.sendRedirect("/failed");
+                response.sendRedirect(baseUrl + "/failed");
             }
         } catch (IOException e) {
             e.printStackTrace();
-
-
         }
     }
 }

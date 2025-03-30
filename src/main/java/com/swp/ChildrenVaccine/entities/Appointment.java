@@ -1,6 +1,7 @@
 package com.swp.ChildrenVaccine.entities;
 
 import com.swp.ChildrenVaccine.enums.AppStatus;
+import com.swp.ChildrenVaccine.enums.MailNoticeStatus;
 import com.swp.ChildrenVaccine.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,17 +22,24 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customerId;
+    private Customer customer;
 
-    @OneToOne
-    @JoinColumn(name = "child_id")
-    private Child childId;
+    @ManyToOne
+    @JoinColumn(name = "child_id", nullable = false)
+    private Child child;
 
     @Column(name = "appointment_date", nullable = false)
     private LocalDate appointmentDate;
 
     @Column(name = "appointment_time", nullable = false)
     private LocalTime appointmentTime;
+
+    @ManyToOne
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private Schedule schedule;
+
+    @Column(name = "shot_number")
+    private int shotNumber;
 
     @Column(name = "status", length = 15, nullable = false)
     @Enumerated(EnumType.STRING)
@@ -41,15 +49,11 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
-    @OneToOne
+    @Column(name = "mail_notice", length = 15, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MailNoticeStatus mailNotice;
+
+    @ManyToOne
     @JoinColumn(name = "vaccine_id")
-    private Vaccine vaccineId;
-
-    @OneToOne
-    @JoinColumn(name = "package_id")
-    private VacinePackage packageId;
-
-    @Column(name = "is_email_sent", nullable = false, columnDefinition = "BIT DEFAULT 0")
-    private boolean isEmailSent = false;
-
+    private Vaccine vaccine;
 }

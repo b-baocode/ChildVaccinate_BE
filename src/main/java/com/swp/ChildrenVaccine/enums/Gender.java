@@ -1,5 +1,5 @@
 package com.swp.ChildrenVaccine.enums;
 
-public enum GenderEnum {
+public enum Gender {
     MALE, FEMALE, OTHER
 }

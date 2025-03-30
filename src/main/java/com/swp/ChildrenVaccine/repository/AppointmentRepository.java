@@ -1,6 +1,7 @@
 package com.swp.ChildrenVaccine.repository;
 
 import com.swp.ChildrenVaccine.entities.Appointment;
+import com.swp.ChildrenVaccine.entities.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,5 +22,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
     List<Appointment> findExpiredAppointments(
             @Param("nowDate") LocalDate nowDate,
             @Param("nowTime") LocalTime nowTime);
+
+    @Query("SELECT a FROM Appointment a WHERE a.customer.cusId = :cusId")
+    List<Appointment> findByCustomerId(@Param("cusId") String cusId);
+
+    List<Appointment> findBySchedule(Schedule schedule);
 
 }
