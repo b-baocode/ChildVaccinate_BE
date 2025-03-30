@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,6 +19,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
 
     //Lấy danh sách tất cả lịch hẹn
     List<Appointment> findAll();
+
+    long countByAppointmentDate(LocalDate appointmentDate);
 
     //luư lịch hẹn
     Appointment save(Appointment appointment);
@@ -37,5 +41,20 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
 
     @Query(value = "SELECT COUNT(*) FROM appointments WHERE appointment_date = :date AND CAST(appointment_time AS TIME) = CAST(:timeSlot AS TIME)", nativeQuery = true)
     int countByDateAndTimeSlot(@Param("date") LocalDate date, @Param("timeSlot") String timeSlot);
+
+    @Query("SELECT a.vaccineId.price FROM Appointment a WHERE a.appId = :appId")
+    BigDecimal findPriceByAppId(@Param("appId") String appId);
+
+    @Query("SELECT SUM(a.vaccineId.price) FROM Appointment a")
+    Double getTotalRevenueVac();
+
+    @Query("SELECT SUM(a.packageId.price) FROM Appointment a")
+    Double getTotalRevenuePack();
+
+    @Query("SELECT a.vaccineId FROM Appointment a WHERE a.vaccineId IS NOT NUll GROUP BY a.vaccineId ORDER BY COUNT(a.vaccineId) DESC")
+    List<?> findTop5Vaccines();
+
+    @Query("SELECT a FROm Appointment a WHERE a.paymentStatus = 'PAID'")
+    List<Appointment> findPaidAppointments();
 
 }
