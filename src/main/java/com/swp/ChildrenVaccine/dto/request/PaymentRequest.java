@@ -1,9 +1,7 @@
 package com.swp.ChildrenVaccine.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Data
 @Getter

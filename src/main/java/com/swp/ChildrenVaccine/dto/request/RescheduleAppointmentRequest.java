@@ -1,9 +1,7 @@
 package com.swp.ChildrenVaccine.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

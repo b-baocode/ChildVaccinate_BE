@@ -2,6 +2,7 @@ package com.swp.ChildrenVaccine.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
 
 @Getter

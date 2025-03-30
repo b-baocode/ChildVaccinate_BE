@@ -13,9 +13,9 @@ public class FeedbackDTO {
     private String appointmentId;
     private String customerId;
     private int rating;
-    private String feedbackText; // Rename 'feedback' to 'feedbackText' to avoid confusion with the field name
-    private String customerFullName; // Optional: Include customer name for display
-    private String appointmentDate; // Optional: Include appointment date for context
+    private String feedbackText;
+    private String customerFullName;
+    private String appointmentDate;
 
     public FeedbackDTO(RatingFeedback feedback) {
         this.feedbackId = feedback.getId();
@@ -26,5 +26,4 @@ public class FeedbackDTO {
         this.customerFullName = feedback.getCustomer().getUser().getFullName();
         this.appointmentDate = feedback.getAppointment().getAppointmentDate().toString();
     }
-
 }

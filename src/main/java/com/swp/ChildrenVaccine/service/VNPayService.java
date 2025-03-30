@@ -137,7 +137,7 @@ public class VNPayService {
     // }
 
     public String createPayment(Schedule schedule, boolean payFull, String appointmentId, HttpServletRequest request,
-            String urlReturn) {
+                                String urlReturn) {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);

@@ -18,5 +18,6 @@ public class RevokedToken {
     private String token;
 
     @Column(nullable = false)
-    private LocalDateTime revokedAt;
+    private LocalDateTime revokedAt = LocalDateTime.now();
+
 }

@@ -165,18 +165,17 @@ public class VNPayController {
     }
 
 }
-// String vnp_TxnRef = vnp_Params.get("vnp_TxnRef");
-// String vnp_TransactionStatus = vnp_Params.get("vnp_TransactionStatus");
+//String vnp_TxnRef = vnp_Params.get("vnp_TxnRef");
+//String vnp_TransactionStatus = vnp_Params.get("vnp_TransactionStatus");
 //
-// Appointment appointment = appointmentRepository.findById(vnp_TxnRef)
-// .orElseThrow(() -> new RuntimeException("Appointment not found"));
+//Appointment appointment = appointmentRepository.findById(vnp_TxnRef)
+//        .orElseThrow(() -> new RuntimeException("Appointment not found"));
 //
-// if ("00".equals(vnp_TransactionStatus)) {
-// appointment.setPaymentStatus(PaymentStatus.PAID);
-// appointment.setStatus(AppStatus.CONFIRMED);
-// } else {
-// appointment.setPaymentStatus(PaymentStatus.FAIL); // Sửa FAIL thành FAILED
-// (theo enum của bạn)
-// }
+//        if ("00".equals(vnp_TransactionStatus)) {
+//        appointment.setPaymentStatus(PaymentStatus.PAID);
+//            appointment.setStatus(AppStatus.CONFIRMED);
+//        } else {
+//                appointment.setPaymentStatus(PaymentStatus.FAIL); // Sửa FAIL thành FAILED (theo enum của bạn)
+//        }
 //
-// appointmentRepository.save(appointment);
+//                appointmentRepository.save(appointment);
