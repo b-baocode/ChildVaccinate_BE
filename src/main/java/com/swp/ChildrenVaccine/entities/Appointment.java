@@ -1,12 +1,12 @@
 package com.swp.ChildrenVaccine.entities;
 
 import com.swp.ChildrenVaccine.enums.AppStatus;
+import com.swp.ChildrenVaccine.enums.MailNoticeStatus;
 import com.swp.ChildrenVaccine.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -25,7 +25,7 @@ public class Appointment {
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "child_id")
+    @JoinColumn(name = "child_id", nullable = false)
     private Child child;
 
     @Column(name = "appointment_date", nullable = false)
@@ -33,6 +33,13 @@ public class Appointment {
 
     @Column(name = "appointment_time", nullable = false)
     private LocalTime appointmentTime;
+
+    @ManyToOne
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private Schedule schedule;
+
+    @Column(name = "shot_number")
+    private int shotNumber;
 
     @Column(name = "status", length = 15, nullable = false)
     @Enumerated(EnumType.STRING)
@@ -42,6 +49,10 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    @Column(name = "mail_notice", length = 15, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MailNoticeStatus mailNotice;
+
     @ManyToOne
     @JoinColumn(name = "vaccine_id")
     private Vaccine vaccineId;
@@ -49,5 +60,4 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "package_id")
     private VacinePackage packageId;
-
 }

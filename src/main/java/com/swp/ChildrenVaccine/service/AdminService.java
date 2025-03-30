@@ -1,20 +1,12 @@
 package com.swp.ChildrenVaccine.service;
 
 import com.swp.ChildrenVaccine.dto.request.CreateStaffRequest;
-import com.swp.ChildrenVaccine.dto.request.RegisterRequest;
-import com.swp.ChildrenVaccine.entities.Customer;
-import com.swp.ChildrenVaccine.entities.Staff;
-import com.swp.ChildrenVaccine.entities.User;
-import com.swp.ChildrenVaccine.entities.Vaccine;
-import com.swp.ChildrenVaccine.enums.Gender;
+import com.swp.ChildrenVaccine.entities.*;
 import com.swp.ChildrenVaccine.enums.RoleEnum;
 import com.swp.ChildrenVaccine.exception.EmailAlreadyExistsException;
-import com.swp.ChildrenVaccine.repository.AppointmentRepository;
-import com.swp.ChildrenVaccine.repository.StaffRepository;
-import com.swp.ChildrenVaccine.repository.UserRepository;
+import com.swp.ChildrenVaccine.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,6 +27,10 @@ public class AdminService {
     private UserService userService;
     @Autowired
     private StaffService staffService;
+    @Autowired
+    private FeedbackRepository feedbackRepository;
+    @Autowired
+    private VaccineRepository vaccineRepository;
 
     public long getNumberOfStaff() {
         return staffRepository.count();
@@ -45,12 +41,12 @@ public class AdminService {
         return appointmentRepository.countByAppointmentDate(today);
     }
 
-    public String getTotalRevenue() {
-        double totalRevenue = appointmentRepository.getTotalRevenueVac() + appointmentRepository.getTotalRevenuePack();
-        DecimalFormat decimalFormat = new DecimalFormat("#");
-        decimalFormat.setMaximumFractionDigits(0);
-        return decimalFormat.format(totalRevenue);
-    }
+//    public String getTotalRevenue() {
+//        double totalRevenue = appointmentRepository.getTotalRevenueVac() + appointmentRepository.getTotalRevenuePack();
+//        DecimalFormat decimalFormat = new DecimalFormat("#");
+//        decimalFormat.setMaximumFractionDigits(0);
+//        return decimalFormat.format(totalRevenue);
+//    }
 
     public List<?> getTop5Vaccines() {
         return appointmentRepository.findTop5Vaccines();
@@ -115,6 +111,25 @@ public class AdminService {
         staffRepository.delete(staff);
         userRepository.delete(staff.getUser());
 
+    }
+
+    public List<RatingFeedback> getAllFeedbacks() {
+        return feedbackRepository.findAll();
+    }
+
+    public String getTotalRevenue() {
+        double totalRevenue = 0;
+        List<Appointment> appointments = appointmentRepository.findPaidAppointments();
+        for (Appointment appointment : appointments) {
+            if (appointment.getVaccineId() != null) {
+                totalRevenue += appointment.getVaccineId().getPrice().doubleValue() * appointment.getVaccineId().getShotNumber();
+            } else {
+                totalRevenue += appointment.getPackageId().getPrice().doubleValue();
+            }
+        }
+        DecimalFormat decimalFormat = new DecimalFormat("#");
+        decimalFormat.setMaximumFractionDigits(0);
+        return decimalFormat.format(totalRevenue);
     }
 
 

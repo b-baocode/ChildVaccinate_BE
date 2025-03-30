@@ -56,4 +56,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT a.vaccineId FROM Appointment a WHERE a.vaccineId IS NOT NUll GROUP BY a.vaccineId ORDER BY COUNT(a.vaccineId) DESC")
     List<?> findTop5Vaccines();
 
+    @Query("SELECT a FROm Appointment a WHERE a.paymentStatus = 'PAID'")
+    List<Appointment> findPaidAppointments();
+
 }

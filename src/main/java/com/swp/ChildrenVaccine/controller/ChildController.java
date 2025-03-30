@@ -31,7 +31,7 @@ public class ChildController {
         }
         return ResponseEntity.ok(children);
     }
-    
+
     @PostMapping("/{cusId}/add")
     ResponseEntity<?> addChild(@PathVariable String cusId ,@RequestBody Child child) {
         try{
@@ -41,11 +41,6 @@ public class ChildController {
             return ResponseEntity.badRequest().body("Thêm trẻ thất bại");
         }
     }
-
-//    @GetMapping("")
-//    List<Child> getListOfChildren() {
-//        return childrenRepository.findAll();
-//    }
 
     @GetMapping("/{id}")
     Child getChildById(@PathVariable String id) {
