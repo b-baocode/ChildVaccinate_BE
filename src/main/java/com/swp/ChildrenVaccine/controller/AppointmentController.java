@@ -229,4 +229,14 @@ public class AppointmentController {
         List<AppointmentDTO> pastAppointments = appointmentService.getPastAppointments();
         return ResponseEntity.ok(pastAppointments);
     }
+
+    @PostMapping("/send-reminder-emails/{cusId}")
+    public ResponseEntity<String> sendReminderEmailsForUpcomingAppointments(@PathVariable String cusId) {
+        try {
+            appointmentService.sendReminderEmailsForUpcomingAppointments(cusId);
+            return ResponseEntity.ok("Reminder emails sent successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send reminder emails.");
+        }
+    }
 }

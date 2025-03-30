@@ -12,7 +12,7 @@ public class AppointmentStartupConfig {
     @Bean
     public ApplicationRunner runOnStartup(AppointmentService appointmentService, ScheduleService scheduleService) {
         return args -> {
-            appointmentService.sendReminderEmailsForUpcomingAppointments();
+//            appointmentService.sendReminderEmailsForUpcomingAppointments();
         };
     }
 }

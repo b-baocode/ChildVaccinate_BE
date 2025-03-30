@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -230,7 +231,12 @@ public class AppointmentService {
     public List<AppointmentDTO> getAllAppointmentByScheduleId(String scheduleId) {
         List<Appointment> appointments = appointmentRepository.findByScheduleId(scheduleId);
         return appointments.stream()
-                .map(AppointmentDTO::new)
+                .map(appointment -> {
+                    AppointmentDTO appointmentDTO = new AppointmentDTO(appointment);
+                    BigDecimal price = appointment.getVaccine().getPrice();
+                    appointmentDTO.setPrice(price);
+                    return appointmentDTO;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -246,9 +252,9 @@ public class AppointmentService {
         }
     }
 
-    public void sendReminderEmailsForUpcomingAppointments() {
+    public void sendReminderEmailsForUpcomingAppointments(String cusId) {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        List<Appointment> appointments = appointmentRepository.findAll();
+        List<Appointment> appointments = appointmentRepository.findByCustomerId(cusId);
         List<Appointment> upcomingAppointments = appointments.stream()
                 .filter(a -> a.getAppointmentDate().isEqual(tomorrow) && a.getStatus() == AppStatus.CONFIRMED)
                 .collect(Collectors.toList());

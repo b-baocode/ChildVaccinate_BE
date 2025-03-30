@@ -4,6 +4,7 @@ import com.swp.ChildrenVaccine.entities.Appointment;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -24,6 +25,7 @@ public class AppointmentDTO {
     private String paymentStatus;
     private String mailNotice;
     private String phoneNumber;
+    private BigDecimal price;
 
     public AppointmentDTO(Appointment appointment) {
         this.appId = appointment.getAppId();
@@ -40,6 +42,7 @@ public class AppointmentDTO {
         this.paymentStatus = appointment.getPaymentStatus().toString();
         this.mailNotice = appointment.getMailNotice().toString();
         this.phoneNumber = appointment.getCustomer().getUser().getPhone();
+        this.price = appointment.getVaccine().getPrice();
     }
 
 }
