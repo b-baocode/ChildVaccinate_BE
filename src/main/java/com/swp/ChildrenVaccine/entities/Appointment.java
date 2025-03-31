@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -57,4 +56,5 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "vaccine_id")
     private Vaccine vaccine;
+
 }

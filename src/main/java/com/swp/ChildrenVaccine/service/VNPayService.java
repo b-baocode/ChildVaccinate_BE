@@ -4,8 +4,6 @@ import com.swp.ChildrenVaccine.config.VNPayConfig;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Schedule;
 import com.swp.ChildrenVaccine.entities.Vaccine;
-import com.swp.ChildrenVaccine.entities.VacinePackage;
-import com.swp.ChildrenVaccine.enums.AppStatus;
 import com.swp.ChildrenVaccine.enums.PaymentStatus;
 import com.swp.ChildrenVaccine.repository.AppointmentRepository;
 import com.swp.ChildrenVaccine.repository.VaccinePackageRepository;
@@ -15,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +23,6 @@ import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -137,7 +132,7 @@ public class VNPayService {
     // }
 
     public String createPayment(Schedule schedule, boolean payFull, String appointmentId, HttpServletRequest request,
-                                String urlReturn) {
+            String urlReturn) {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);

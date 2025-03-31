@@ -1,13 +1,18 @@
 package com.swp.ChildrenVaccine.repository;
 
 import com.swp.ChildrenVaccine.dto.response.AppointmentFeedbackDTO;
+import com.swp.ChildrenVaccine.dto.response.VaccineResponseDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.entities.Schedule;
+import com.swp.ChildrenVaccine.entities.Vaccine;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -39,6 +44,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
     @Query(value = "SELECT COUNT(*) FROM appointments WHERE appointment_date = :date AND CAST(appointment_time AS TIME) = CAST(:timeSlot AS TIME)", nativeQuery = true)
     int countByDateAndTimeSlot(@Param("date") LocalDate date, @Param("timeSlot") String timeSlot);
 
+    long countByAppointmentDate(LocalDate appointmentDate);
+
     @Query("SELECT a FROM Appointment a WHERE a.schedule.scheduleId = :scheduleId")
     List<Appointment> findByScheduleId(@Param("scheduleId") String scheduleId);
 
@@ -46,4 +53,15 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
 
     @Query("SELECT a FROM Appointment a WHERE a.customer.user.phone = :phoneNumber")
     List<Appointment> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    @Query("SELECT a FROm Appointment a WHERE a.paymentStatus = 'PAID' AND a.status = 'COMPLETED'")
+    List<Appointment> findPaidAppointments();
+
+//    @Query("SELECT a.vaccine, COUNT(a.vaccine) AS number FROM Appointment a GROUP BY a.vaccine ORDER BY COUNT(a.vaccine) DESC")
+//    List<?> findTop5Vaccines(Pageable pageable);
+
+    @Query("SELECT a.vaccine.name, COUNT(a.vaccine) AS number, SUM(a.vaccine.price) FROM Appointment a GROUP BY a.vaccine.name ORDER BY COUNT(a.vaccine) DESC")
+    List<Object[]> findTop5Vaccines(Pageable pageable);
+
+
 }

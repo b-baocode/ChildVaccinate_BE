@@ -2,13 +2,10 @@ package com.swp.ChildrenVaccine.entities;
 
 import com.swp.ChildrenVaccine.enums.Gender;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-// import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Getter

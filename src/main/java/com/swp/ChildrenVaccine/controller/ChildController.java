@@ -31,7 +31,7 @@ public class ChildController {
         }
         return ResponseEntity.ok(children);
     }
-    
+
     @PostMapping("/{cusId}/add")
     ResponseEntity<?> addChild(@PathVariable String cusId ,@RequestBody Child child) {
         try{

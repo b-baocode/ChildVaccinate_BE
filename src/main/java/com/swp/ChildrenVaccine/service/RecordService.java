@@ -2,6 +2,7 @@ package com.swp.ChildrenVaccine.service;
 
 
 import com.swp.ChildrenVaccine.dto.request.RecordRequest;
+import com.swp.ChildrenVaccine.dto.response.VaccinationRecordDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Staff;
 import com.swp.ChildrenVaccine.entities.VaccinationRecord;

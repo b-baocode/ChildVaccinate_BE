@@ -1,11 +1,11 @@
 package com.swp.ChildrenVaccine.entities;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.swp.ChildrenVaccine.enums.RoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Nationalized;
 
 

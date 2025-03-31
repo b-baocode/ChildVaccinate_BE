@@ -3,7 +3,6 @@ package com.swp.ChildrenVaccine.controller;
 import com.swp.ChildrenVaccine.dto.request.PaymentRequest;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Schedule;
-import com.swp.ChildrenVaccine.enums.AppStatus;
 import com.swp.ChildrenVaccine.enums.PaymentStatus;
 import com.swp.ChildrenVaccine.repository.AppointmentRepository;
 import com.swp.ChildrenVaccine.repository.ScheduleRepository;
@@ -15,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -165,17 +163,18 @@ public class VNPayController {
     }
 
 }
-//String vnp_TxnRef = vnp_Params.get("vnp_TxnRef");
-//String vnp_TransactionStatus = vnp_Params.get("vnp_TransactionStatus");
+// String vnp_TxnRef = vnp_Params.get("vnp_TxnRef");
+// String vnp_TransactionStatus = vnp_Params.get("vnp_TransactionStatus");
 //
-//Appointment appointment = appointmentRepository.findById(vnp_TxnRef)
-//        .orElseThrow(() -> new RuntimeException("Appointment not found"));
+// Appointment appointment = appointmentRepository.findById(vnp_TxnRef)
+// .orElseThrow(() -> new RuntimeException("Appointment not found"));
 //
-//        if ("00".equals(vnp_TransactionStatus)) {
-//        appointment.setPaymentStatus(PaymentStatus.PAID);
-//            appointment.setStatus(AppStatus.CONFIRMED);
-//        } else {
-//                appointment.setPaymentStatus(PaymentStatus.FAIL); // Sửa FAIL thành FAILED (theo enum của bạn)
-//        }
+// if ("00".equals(vnp_TransactionStatus)) {
+// appointment.setPaymentStatus(PaymentStatus.PAID);
+// appointment.setStatus(AppStatus.CONFIRMED);
+// } else {
+// appointment.setPaymentStatus(PaymentStatus.FAIL); // Sửa FAIL thành FAILED
+// (theo enum của bạn)
+// }
 //
-//                appointmentRepository.save(appointment);
+// appointmentRepository.save(appointment);

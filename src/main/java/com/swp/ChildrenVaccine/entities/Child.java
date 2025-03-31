@@ -1,8 +1,10 @@
 package com.swp.ChildrenVaccine.entities;
+
 import com.swp.ChildrenVaccine.enums.Gender;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
 @Getter
