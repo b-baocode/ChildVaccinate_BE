@@ -6,8 +6,6 @@ import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.swp.ChildrenVaccine.entities.Child;
 import com.swp.ChildrenVaccine.entities.Customer;
-import com.swp.ChildrenVaccine.entities.Vaccine;
-import com.swp.ChildrenVaccine.entities.VacinePackage;
 import com.swp.ChildrenVaccine.enums.AppStatus;
 import com.swp.ChildrenVaccine.enums.PaymentStatus;
 import jakarta.persistence.*;

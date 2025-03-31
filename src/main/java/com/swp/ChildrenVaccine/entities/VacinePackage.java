@@ -1,10 +1,13 @@
 package com.swp.ChildrenVaccine.entities;
 
-import jakarta.persistence.*;
-
-import java.math.BigDecimal;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -16,11 +19,14 @@ public class VacinePackage {
     @Column(name = "package_id", length = 50)
     private String packageId;
 
-    @Column(name = "name", length = 255, nullable = false)
+    @Column(name = "name", columnDefinition = "NVARCHAR(255)", nullable = false)
     private String name;
 
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column(name = "description", columnDefinition = "NVARCHAR(500)")
     private String description;
+
+    @Column(name = "available", nullable = false)
+    private int available;
 
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
