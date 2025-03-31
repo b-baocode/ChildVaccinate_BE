@@ -1,8 +1,8 @@
 package com.swp.ChildrenVaccine.entities;
 
 import com.swp.ChildrenVaccine.enums.AppStatus;
-import com.swp.ChildrenVaccine.enums.MailNoticeStatus;
 import com.swp.ChildrenVaccine.enums.PaymentStatus;
+import com.swp.ChildrenVaccine.enums.MailNoticeStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -55,9 +55,6 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "vaccine_id")
-    private Vaccine vaccineId;
+    private Vaccine vaccine;
 
-    @ManyToOne
-    @JoinColumn(name = "package_id")
-    private VacinePackage packageId;
 }

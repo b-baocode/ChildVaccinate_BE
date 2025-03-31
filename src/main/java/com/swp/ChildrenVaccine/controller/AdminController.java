@@ -1,6 +1,7 @@
 package com.swp.ChildrenVaccine.controller;
 
 import com.swp.ChildrenVaccine.dto.request.CreateStaffRequest;
+import com.swp.ChildrenVaccine.dto.response.VaccineResponseDTO;
 import com.swp.ChildrenVaccine.entities.Staff;
 import com.swp.ChildrenVaccine.exception.EmailAlreadyExistsException;
 import com.swp.ChildrenVaccine.service.AdminService;
@@ -88,6 +89,16 @@ public class AdminController {
     @GetMapping("/feedbacks")
     public ResponseEntity<?> getAllFeedbacks() {
         return ResponseEntity.ok(adminService.getAllFeedbacks());
+    }
+
+    @GetMapping("/{scheduleId}/appointments")
+    public ResponseEntity<?> getAppointmentsByScheduleId(@PathVariable String scheduleId) {
+        return ResponseEntity.ok(adminService.getAppointmentOfSchedule(scheduleId));
+    }
+
+    @GetMapping("/{scheduleId}/revenue")
+    public ResponseEntity<?> getRevenueByScheduleId(@PathVariable String scheduleId) {
+        return ResponseEntity.ok(adminService.getRevenueOfSchedule(scheduleId));
     }
 
 }

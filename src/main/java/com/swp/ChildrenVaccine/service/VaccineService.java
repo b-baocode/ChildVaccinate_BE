@@ -2,6 +2,7 @@ package com.swp.ChildrenVaccine.service;
 
 import com.swp.ChildrenVaccine.entities.Vaccine;
 import com.swp.ChildrenVaccine.entities.VacinePackage;
+import com.swp.ChildrenVaccine.repository.ScheduleRepository;
 import com.swp.ChildrenVaccine.repository.VaccinePackageRepository;
 import com.swp.ChildrenVaccine.repository.VaccineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ public class VaccineService {
 
     @Autowired
     private VaccinePackageRepository vacinePackageRepository;
+    @Autowired
+    private ScheduleRepository scheduleRepository;
 
     public List<Vaccine> getAllVaccines() {
         return vaccineRepository.findAll();
@@ -24,5 +27,11 @@ public class VaccineService {
 
     public List<VacinePackage> getAllPackages() {
         return vacinePackageRepository.findAll();
+    }
+
+    public void updateVaccineQuantity(Vaccine vaccine, int totalShot) {
+        int newQuantity = vaccine.getQuantity() - totalShot;
+        vaccine.setQuantity(newQuantity);
+        vaccineRepository.save(vaccine);
     }
 }

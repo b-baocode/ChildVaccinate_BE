@@ -6,6 +6,7 @@ import com.swp.ChildrenVaccine.dto.response.VaccinationRecordDTO;
 import com.swp.ChildrenVaccine.entities.VaccinationRecord;
 import com.swp.ChildrenVaccine.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,4 +45,35 @@ public class RecordController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping
+    public ResponseEntity<List<VaccinationRecordDTO>> getAllRecords() {
+        List<VaccinationRecordDTO> dtos = recordService.getAllRecords()
+                .stream()
+                .map(record -> new VaccinationRecordDTO(
+                        record.getId(),
+                        record.getAppointment().getAppId(),
+                        record.getAppointmentDate(),
+                        (record.getStaff() != null && record.getStaff().getUser() != null)
+                                ? record.getStaff().getUser().getFullName()
+                                : null,
+                        record.getSymptoms(),
+                        record.getNotes()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/by-appId/{appId}")
+    public ResponseEntity<List<VaccinationRecord>> getRecordsByAppId(@PathVariable String appId) {
+        try {
+            List<VaccinationRecord> records = recordService.getRecordsByAppId(appId);
+            if (records.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(records);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }

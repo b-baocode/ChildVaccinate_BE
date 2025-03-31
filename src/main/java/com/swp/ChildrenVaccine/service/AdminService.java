@@ -1,18 +1,23 @@
 package com.swp.ChildrenVaccine.service;
 
 import com.swp.ChildrenVaccine.dto.request.CreateStaffRequest;
+import com.swp.ChildrenVaccine.dto.response.VaccinationRecordDTO;
+import com.swp.ChildrenVaccine.dto.response.VaccineResponseDTO;
 import com.swp.ChildrenVaccine.entities.*;
 import com.swp.ChildrenVaccine.enums.RoleEnum;
 import com.swp.ChildrenVaccine.exception.EmailAlreadyExistsException;
 import com.swp.ChildrenVaccine.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -48,9 +53,9 @@ public class AdminService {
 //        return decimalFormat.format(totalRevenue);
 //    }
 
-    public List<?> getTop5Vaccines() {
-        return appointmentRepository.findTop5Vaccines();
-    }
+//    public List<?> getTop5Vaccines() {
+//        return appointmentRepository.findTop5Vaccines();
+//    }
 
     public void createStaff(CreateStaffRequest request){
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -117,20 +122,67 @@ public class AdminService {
         return feedbackRepository.findAll();
     }
 
+//    public String getTotalRevenue() {
+//        double totalRevenue = 0;
+//        List<Appointment> appointments = appointmentRepository.findPaidAppointments();
+//        for (Appointment appointment : appointments) {
+//            if (appointment.getVaccine() != null) {
+//                totalRevenue += appointment.getVaccine().getPrice().doubleValue() * appointment.getVaccine().getShotNumber();
+//            }
+//        }
+//        DecimalFormat decimalFormat = new DecimalFormat("#");
+//        decimalFormat.setMaximumFractionDigits(0);
+//        return decimalFormat.format(totalRevenue);
+//    }
+
+    public List<Appointment> getAppointmentOfSchedule(String scheduleId) {
+        List<Appointment> appointments = appointmentRepository.findByScheduleId(scheduleId);
+        for (Appointment appointment : appointments) {
+            System.out.println(appointment.getAppointmentDate());
+        }
+        return appointments;
+    }
+
+    public double getRevenueOfSchedule(String scheduleId) {
+        double totalRevenue = 0;
+        List<Appointment> appointments = appointmentRepository.findByScheduleId(scheduleId);
+        for (Appointment appointment : appointments) {
+            if (appointment.getVaccine() != null) {
+                totalRevenue += appointment.getVaccine().getPrice().doubleValue(); //* appointment.getVaccine().getShotNumber();
+            }
+        }
+        return totalRevenue;
+    }
+
     public String getTotalRevenue() {
         double totalRevenue = 0;
         List<Appointment> appointments = appointmentRepository.findPaidAppointments();
         for (Appointment appointment : appointments) {
-            if (appointment.getVaccineId() != null) {
-                totalRevenue += appointment.getVaccineId().getPrice().doubleValue() * appointment.getVaccineId().getShotNumber();
-            } else {
-                totalRevenue += appointment.getPackageId().getPrice().doubleValue();
+            if (appointment.getVaccine() != null) {
+                totalRevenue += appointment.getVaccine().getPrice().doubleValue();
             }
         }
         DecimalFormat decimalFormat = new DecimalFormat("#");
         decimalFormat.setMaximumFractionDigits(0);
         return decimalFormat.format(totalRevenue);
     }
+
+    public List<VaccineResponseDTO> getTop5Vaccines() {
+        Pageable topFive = PageRequest.of(0, 100);
+        List<Object[]> top5Vaccines = appointmentRepository.findTop5Vaccines(topFive);
+        return top5Vaccines.stream()
+                .map(result -> {
+                    String vaccineName = (String) result[0];
+                    long count = ((Number) result[1]).longValue();
+                    double revenue = ((BigDecimal) result[2]).doubleValue();
+                    return new VaccineResponseDTO( vaccineName, (int) count, revenue  );
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
+
 
 
 }
