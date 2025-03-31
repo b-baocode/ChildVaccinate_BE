@@ -1,6 +1,5 @@
 package com.swp.ChildrenVaccine.repository;
 
-import com.swp.ChildrenVaccine.dto.response.VaccinationRecordDTO;
 import com.swp.ChildrenVaccine.entities.VaccinationRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
