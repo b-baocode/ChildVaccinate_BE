@@ -124,6 +124,12 @@ public class ScheduleService {
                 .anyMatch(appointment -> appointment.getStatus() == AppStatus.CANCELLED);
 
         if (anyCancelled) {
+            appointments.stream()
+                    .filter(appointment -> appointment.getStatus() != AppStatus.COMPLETED)
+                    .forEach(appointment -> {
+                        appointment.setStatus(AppStatus.CANCELLED);
+                        appointmentRepository.save(appointment);
+                    });
             schedule.setStatus(ScheduleStatus.CANCELLED);
         } else if (allCompleted) {
             schedule.setStatus(ScheduleStatus.COMPLETED);

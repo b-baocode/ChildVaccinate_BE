@@ -1,5 +1,6 @@
 package com.swp.ChildrenVaccine.entities;
 
+import com.swp.ChildrenVaccine.enums.CheckReact;
 import com.swp.ChildrenVaccine.enums.Severity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,4 +36,8 @@ public class VaccinationReaction {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "checkedStatus", nullable = false)
+    private CheckReact check;
 }

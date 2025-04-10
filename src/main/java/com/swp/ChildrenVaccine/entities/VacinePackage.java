@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,8 +24,9 @@ public class VacinePackage {
     private String description;
 
     @Column(name = "available", nullable = false)
-    private int available;
+    private boolean available;
 
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
 }

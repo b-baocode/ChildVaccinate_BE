@@ -36,4 +36,7 @@ public class Vaccine {
 
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
+    @Column(name = "age_month", nullable = false)
+    private int ageMonth;
 }

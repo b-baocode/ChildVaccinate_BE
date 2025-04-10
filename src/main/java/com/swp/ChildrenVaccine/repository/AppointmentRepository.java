@@ -4,6 +4,7 @@ import com.swp.ChildrenVaccine.dto.response.AppointmentFeedbackDTO;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.entities.Schedule;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -46,4 +47,12 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
 
     @Query("SELECT a FROM Appointment a WHERE a.customer.user.phone = :phoneNumber")
     List<Appointment> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    long countByAppointmentDate(LocalDate appointmentDate);
+
+    @Query("SELECT a FROm Appointment a WHERE a.paymentStatus = 'PAID' AND a.status = 'COMPLETED'")
+    List<Appointment> findPaidAppointments();
+
+    @Query("SELECT a.vaccine.name, COUNT(a.vaccine) AS number, SUM(a.vaccine.price) FROM Appointment a GROUP BY a.vaccine.name ORDER BY COUNT(a.vaccine) DESC")
+    List<Object[]> findTop5Vaccines(Pageable pageable);
 }

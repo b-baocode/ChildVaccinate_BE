@@ -5,11 +5,13 @@ import com.swp.ChildrenVaccine.dto.request.ReactionRequest;
 import com.swp.ChildrenVaccine.entities.Appointment;
 import com.swp.ChildrenVaccine.entities.Child;
 import com.swp.ChildrenVaccine.entities.VaccinationReaction;
+import com.swp.ChildrenVaccine.enums.CheckReact;
 import com.swp.ChildrenVaccine.repository.AppointmentRepository;
 import com.swp.ChildrenVaccine.repository.ChildRepository;
 import com.swp.ChildrenVaccine.repository.ReactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,10 +57,19 @@ public class ReactionService {
             reaction.setSymptoms(reactionRequest.getSymptoms());
             reaction.setSeverity(reactionRequest.getSeverity());
             reaction.setReactionDate(reactionRequest.getReactionDate());
+            reaction.setCheck(CheckReact.PENDING);
 
             return reactionRepository.save(reaction);
         } else {
             throw new IllegalArgumentException("Invalid Child or Appointment ID");
         }
+    }
+
+    @Transactional
+    public VaccinationReaction updateCheckReact(String id) {
+        VaccinationReaction reaction = reactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reaction not found"));
+        reaction.setCheck(CheckReact.CHECKED);
+        return reactionRepository.save(reaction);
     }
 }

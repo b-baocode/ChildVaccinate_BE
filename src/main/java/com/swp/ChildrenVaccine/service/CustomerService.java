@@ -3,10 +3,12 @@ package com.swp.ChildrenVaccine.service;
 import com.swp.ChildrenVaccine.dto.request.UpdateCustomerRequest;
 import com.swp.ChildrenVaccine.entities.Customer;
 import com.swp.ChildrenVaccine.repository.CustomerRepository;
+import com.swp.ChildrenVaccine.repository.CustomerUserProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,5 +44,9 @@ public class CustomerService {
                     return customerRepository.save(customer);
                 })
                 .orElseThrow(() -> new RuntimeException("Customer not found with id: " + cusId));
+    }
+
+    public List<CustomerUserProjection> getAllCustomerProfiles() {
+        return customerRepository.findAllCustomerProfiles();
     }
 }

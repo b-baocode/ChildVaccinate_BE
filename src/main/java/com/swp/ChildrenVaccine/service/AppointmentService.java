@@ -157,7 +157,17 @@ public class AppointmentService {
         if (currentStatus == AppStatus.CONFIRMED &&
                 (newStatus == AppStatus.COMPLETED || newStatus == AppStatus.CANCELLED)) {
             appointment.setStatus(newStatus);
+            Vaccine vaccine = appointment.getVaccine();
+            if (vaccine != null) {
+                vaccine.setQuantity(vaccine.getQuantity() + 1);
+                vaccineRepository.save(vaccine);
+            }
+            String scheduleId = appointment.getSchedule().getScheduleId();
+            scheduleService.updateScheduleStatus(scheduleId, ScheduleStatus.CANCELLED);
         } else if (currentStatus == AppStatus.COMPLETED && newStatus == AppStatus.CANCELLED) {
+            appointment.setStatus(newStatus);
+
+        } else if (currentStatus == AppStatus.CONFIRMED && newStatus == AppStatus.CANCELLED) {
             appointment.setStatus(newStatus);
             Vaccine vaccine = appointment.getVaccine();
             if (vaccine != null) {

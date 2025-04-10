@@ -40,4 +40,13 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @GetMapping("/profiles")
+    public ResponseEntity<List<CustomerUserProjection>> getAllCustomerProfiles() {
+        List<CustomerUserProjection> customerProfiles = customerService.getAllCustomerProfiles();
+        if (customerProfiles.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(customerProfiles);
+    }
 }

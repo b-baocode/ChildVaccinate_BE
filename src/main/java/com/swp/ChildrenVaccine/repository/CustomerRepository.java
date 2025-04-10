@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,4 +25,11 @@ public interface CustomerRepository extends JpaRepository<Customer, String> {
     CustomerUserProjection findCustomerProfile(@Param("cusId") String cusId);
 
     Optional<Customer> findByCusId(String cusId);
+
+    @Query(value = "SELECT c.cus_id AS cusId, c.user_id AS userId, c.address, c.date_of_birth AS dateOfBirth, c.gender, " +
+            "u.email, u.full_name AS fullName, u.phone " +
+            "FROM customers c " +
+            "JOIN users u ON c.user_id = u.user_id "
+            , nativeQuery = true)
+    List<CustomerUserProjection> findAllCustomerProfiles();
 }

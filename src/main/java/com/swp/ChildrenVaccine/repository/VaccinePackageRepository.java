@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface VaccinePackageRepository extends JpaRepository<VacinePackage, String>{
     List<VacinePackage> findAll();
     Optional<VacinePackage> findByPackageId(String id);
+    Optional<VacinePackage> findTopByOrderByPackageIdDesc();
+
 }

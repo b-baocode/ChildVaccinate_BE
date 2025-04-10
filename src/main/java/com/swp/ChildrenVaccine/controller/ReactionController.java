@@ -42,10 +42,17 @@ public class ReactionController {
                         reaction.getAppointment().getAppId(),
                         reaction.getSymptoms(),
                         reaction.getSeverity().name(),
-                        reaction.getReactionDate()
+                        reaction.getReactionDate(),
+                        reaction.getCheck().name()
                 ))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
+    }
+
+    @PutMapping("/update-check/{id}")
+    public ResponseEntity<VaccinationReaction> updateCheckReact(@PathVariable String id) {
+        VaccinationReaction updatedReaction = reactionService.updateCheckReact(id);
+        return ResponseEntity.ok(updatedReaction);
     }
 }

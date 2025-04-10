@@ -16,5 +16,6 @@ public class VaccinationReactionDTO {
     private String symptoms;
     private String severity;
     private LocalDateTime reactionDate;
+    private String check;
 }
 
